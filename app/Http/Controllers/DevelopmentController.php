@@ -18,12 +18,12 @@ use App\Services\DevelopmentRequestService;
 use App\Services\TicketAttachmentService;
 use App\Services\TicketHistoryService;
 use App\Services\TicketWorkflowService;
+use App\Support\UploadSecurityPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -243,8 +243,8 @@ class DevelopmentController extends Controller
             'urgency_level_id' => [$required, 'integer', Rule::exists('urgency_levels', 'id')->where('is_active', true)],
             'security_controls' => ['nullable', 'array', 'max:6'],
             'security_controls.*' => [Rule::in(array_keys(DevelopmentSecurityControl::TYPES))],
-            'attachments' => ['nullable', 'array', 'max:5'],
-            'attachments.*' => ['file', File::types(TicketAttachmentService::ALLOWED_EXTENSIONS)->max(10 * 1024)],
+            'attachments' => ['nullable', 'array', 'max:'.UploadSecurityPolicy::MAX_FILES_PER_REQUEST],
+            'attachments.*' => UploadSecurityPolicy::fileRules(TicketAttachmentService::ALLOWED_EXTENSIONS),
             'lock_version' => [$developmentRequest ? 'required' : 'nullable', 'integer', 'min:1'],
         ]);
 

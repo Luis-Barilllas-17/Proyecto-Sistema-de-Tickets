@@ -9577,7 +9577,7 @@ select:focus-visible {
     margin-bottom: 15px;
 }
 
-.preview-field label {
+.preview-field__label {
     display: block;
     margin-bottom: 6px;
     color: #596671;
@@ -9585,7 +9585,7 @@ select:focus-visible {
     font-weight: 750;
 }
 
-.preview-field label strong {
+.preview-field__label strong {
     color: var(--danger);
 }
 

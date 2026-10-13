@@ -36,7 +36,7 @@
                         <div class="maintenance-completion-grid">
                             <div class="field"><label>Resultado final <strong>*</strong></label><select name="result" required><option value="">Seleccionar</option>@foreach(App\Models\MaintenanceOrder::RESULTS as $value=>$label)<option value="{{ $value }}" @selected(old('result')===$value)>{{ $label }}</option>@endforeach</select></div>
                             <div class="field field--wide"><label>Observaciones técnicas <strong>*</strong></label><textarea name="observations" rows="4" minlength="10" maxlength="10000" required>{{ old('observations') }}</textarea></div>
-                            <div class="field"><label>Evidencias <strong>*</strong></label><input type="file" name="evidences[]" accept=".jpg,.jpeg,.png,.webp,.pdf" multiple><span class="field__hint">Hasta 8 archivos, 10 MB cada uno.</span></div>
+                            <div class="field"><label for="maintenance-evidences">Evidencias <strong>*</strong></label><input id="maintenance-evidences" type="file" name="evidences[]" accept=".jpg,.jpeg,.png,.webp,.pdf" multiple><span class="field__hint">Hasta 5 archivos, 5 MB cada uno.</span></div>
                             <div class="field"><label>Descripción de evidencias</label><input name="evidence_description" maxlength="1000" value="{{ old('evidence_description') }}"></div>
                         </div>
                         <button class="button button--primary button--full">Completar y documentar mantenimiento</button>

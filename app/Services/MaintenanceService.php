@@ -14,6 +14,7 @@ use App\Models\TicketStatus;
 use App\Models\TicketSubcategory;
 use App\Models\UrgencyLevel;
 use App\Models\User;
+use App\Support\UploadSecurityPolicy;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -342,6 +343,7 @@ class MaintenanceService
         if (! $file->isValid()) {
             throw new RuntimeException('La evidencia recibida no es válida.');
         }
+        UploadSecurityPolicy::assertSafeSize($file);
         $extension = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
         if (! in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
             throw new RuntimeException('El tipo de evidencia no está permitido.');

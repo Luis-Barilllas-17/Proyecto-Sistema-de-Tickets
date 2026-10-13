@@ -7,11 +7,11 @@ use App\Models\DevelopmentTestEvidence;
 use App\Services\DevelopmentRequestService;
 use App\Services\TicketAttachmentService;
 use App\Services\TicketHistoryService;
+use App\Support\UploadSecurityPolicy;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 
 class DevelopmentTestController extends Controller
 {
@@ -31,11 +31,11 @@ class DevelopmentTestController extends Controller
             'result' => ['required', Rule::in(array_keys(DevelopmentTestEvidence::RESULTS))],
             'executed_at' => ['required', 'date', 'before_or_equal:now'],
             'notes' => ['nullable', 'string', 'max:10000'],
-            'attachments' => ['required', 'array', 'min:1', 'max:5'],
-            'attachments.*' => ['file', File::types(TicketAttachmentService::ALLOWED_EXTENSIONS)->max(10 * 1024)],
+            'attachments' => ['required', 'array', 'min:1', 'max:'.UploadSecurityPolicy::MAX_FILES_PER_REQUEST],
+            'attachments.*' => UploadSecurityPolicy::fileRules(TicketAttachmentService::ALLOWED_EXTENSIONS),
         ], [
             'attachments.required' => 'Adjunta al menos una evidencia verificable de la prueba.',
-            'attachments.*' => 'Una evidencia no es válida, supera 10 MB o tiene un tipo no permitido.',
+            'attachments.*' => 'Una evidencia no es válida, supera 5 MB o tiene un tipo no permitido.',
         ]);
 
         DB::transaction(function () use ($request, $developmentRequest, $validated): void {

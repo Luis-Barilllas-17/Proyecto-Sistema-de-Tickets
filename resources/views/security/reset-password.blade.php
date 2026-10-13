@@ -33,7 +33,7 @@
                     <label for="password">Contraseña temporal</label>
                     <div class="input-shell">
                         <span class="input-prefix input-prefix--lock" aria-hidden="true"></span>
-                        <input id="password" name="password" type="password" autocomplete="new-password" required data-password-input autofocus>
+                        <input id="password" name="password" type="password" autocomplete="new-password" required data-password-input>
                         <button type="button" class="password-toggle" data-password-toggle aria-label="Mostrar contraseña"><span>Ver</span></button>
                     </div>
                     <span class="field__hint">Mínimo 10 caracteres, mayúscula, minúscula, número y símbolo.</span>

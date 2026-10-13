@@ -10,11 +10,11 @@ use App\Services\InventoryService;
 use App\Services\TicketAttachmentService;
 use App\Services\TicketHistoryService;
 use App\Services\TicketWorkflowService;
+use App\Support\UploadSecurityPolicy;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
 
 class TicketCollaborationController extends Controller
@@ -227,14 +227,14 @@ class TicketCollaborationController extends Controller
     private function attachmentRules(): array
     {
         return [
-            'attachments' => ['nullable', 'array', 'max:5'],
-            'attachments.*' => ['file', File::types(TicketAttachmentService::ALLOWED_EXTENSIONS)->max(10 * 1024)],
+            'attachments' => ['nullable', 'array', 'max:'.UploadSecurityPolicy::MAX_FILES_PER_REQUEST],
+            'attachments.*' => UploadSecurityPolicy::fileRules(TicketAttachmentService::ALLOWED_EXTENSIONS),
         ];
     }
 
     private function fileMessages(): array
     {
-        return ['attachments.*' => 'Uno de los archivos no es válido, supera 10 MB o tiene un tipo no permitido.'];
+        return ['attachments.*' => 'Uno de los archivos no es válido, supera 5 MB o tiene un tipo no permitido.'];
     }
 
     private function clean(?string $value): ?string

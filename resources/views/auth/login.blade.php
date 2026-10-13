@@ -24,7 +24,6 @@
                     placeholder="nombre@zolicguate.com"
                     autocomplete="username"
                     required
-                    autofocus
                 >
             </div>
         </div>

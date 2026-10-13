@@ -49,8 +49,8 @@ class TicketWorkflowService
     public function status(string $slug): TicketStatus
     {
         $status = TicketStatus::where('slug', $slug)->where('is_active', true)->first();
-        if (! $status) {
-            throw ValidationException::withMessages(['ticket_status_id' => "El estado requerido «$slug» no está activo."]);
+        if (! $status instanceof TicketStatus) {
+            throw ValidationException::withMessages(['ticket_status_id' => 'El estado requerido no está activo.']);
         }
 
         return $status;

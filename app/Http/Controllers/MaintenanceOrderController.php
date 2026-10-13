@@ -8,11 +8,11 @@ use App\Models\MaintenanceOrderItem;
 use App\Models\MaintenancePlan;
 use App\Models\MaintenancePlanEquipment;
 use App\Services\MaintenanceService;
+use App\Support\UploadSecurityPolicy;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -69,8 +69,8 @@ class MaintenanceOrderController extends Controller
             'items' => ['required', 'array'],
             'items.*.status' => ['required', Rule::in(array_keys(MaintenanceOrderItem::STATUSES))],
             'items.*.observation' => ['nullable', 'string', 'max:2000'],
-            'evidences' => ['nullable', 'array', 'max:8'],
-            'evidences.*' => ['file', File::types(MaintenanceService::ALLOWED_EXTENSIONS)->max(10 * 1024)],
+            'evidences' => ['nullable', 'array', 'max:'.UploadSecurityPolicy::MAX_FILES_PER_REQUEST],
+            'evidences.*' => UploadSecurityPolicy::fileRules(MaintenanceService::ALLOWED_EXTENSIONS),
             'evidence_description' => ['nullable', 'string', 'max:1000'],
         ]);
         $this->maintenance->complete(

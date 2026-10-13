@@ -9,10 +9,10 @@ use App\Models\Ticket;
 use App\Models\TicketForm;
 use App\Models\TicketSubcategory;
 use App\Models\User;
+use App\Support\UploadSecurityPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
 
 class TicketInputService
@@ -35,11 +35,11 @@ class TicketInputService
             'is_internal' => ['nullable', 'boolean'],
             'fields' => ['nullable', 'array', 'max:100'],
             'equipment_codes' => ['nullable', 'string', 'max:1500'],
-            'attachments' => ['nullable', 'array', 'max:5'],
-            'attachments.*' => ['file', File::types(TicketAttachmentService::ALLOWED_EXTENSIONS)->max(10 * 1024)],
+            'attachments' => ['nullable', 'array', 'max:'.UploadSecurityPolicy::MAX_FILES_PER_REQUEST],
+            'attachments.*' => UploadSecurityPolicy::fileRules(TicketAttachmentService::ALLOWED_EXTENSIONS),
             'lock_version' => ['nullable', 'integer', 'min:1'],
         ], [
-            'attachments.*' => 'Uno de los archivos no es válido, supera 10 MB o tiene un tipo no permitido.',
+            'attachments.*' => 'Uno de los archivos no es válido, supera 5 MB o tiene un tipo no permitido.',
         ]);
 
         if (! empty($validated['ticket_subcategory_id']) && ! TicketSubcategory::whereKey($validated['ticket_subcategory_id'])

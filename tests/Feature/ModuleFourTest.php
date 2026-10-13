@@ -110,6 +110,20 @@ class ModuleFourTest extends TestCase
         $this->actingAs($owner)->get(route('tickets.attachments.download', [$ticket, $attachment]))->assertDownload('evidencia.pdf');
     }
 
+    public function test_attachment_larger_than_the_safe_limit_is_rejected(): void
+    {
+        Storage::fake('local');
+        $data = $this->baseConfiguration();
+        $requester = $this->userWithPermissions(['tickets.view', 'tickets.create'], $data['area']);
+
+        $this->actingAs($requester)->post(route('tickets.store'), $this->payload($data, [
+            'attachments' => [UploadedFile::fake()->create('demasiado-grande.pdf', 5121, 'application/pdf')],
+        ]))->assertSessionHasErrors('attachments.0');
+
+        $this->assertDatabaseCount('tickets', 0);
+        Storage::disk('local')->assertMissing('ticket-attachments');
+    }
+
     public function test_multilevel_approval_only_advances_for_the_authorized_approver(): void
     {
         $data = $this->baseConfiguration();

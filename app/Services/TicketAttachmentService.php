@@ -8,6 +8,7 @@ use App\Models\TicketActivity;
 use App\Models\TicketAttachment;
 use App\Models\TicketComment;
 use App\Models\User;
+use App\Support\UploadSecurityPolicy;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -41,6 +42,8 @@ class TicketAttachmentService
                 if (! $file instanceof UploadedFile || ! $file->isValid()) {
                     throw new RuntimeException('El archivo recibido no es válido.');
                 }
+
+                UploadSecurityPolicy::assertSafeSize($file);
 
                 $extension = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
                 if (! in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
