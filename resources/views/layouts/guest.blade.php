@@ -10,60 +10,18 @@
 </head>
 <body class="guest-page">
     <main class="auth-shell">
-        <section class="auth-brand" aria-label="Sistema de Gestión de Tickets ZOLIC">
-            <div class="auth-brand__glow auth-brand__glow--one"></div>
-            <div class="auth-brand__glow auth-brand__glow--two"></div>
-
+        <section class="auth-brand auth-brand--photo" aria-label="Sistema de Gestión de Tickets ZOLIC">
             <div class="auth-brand__content">
-                <a href="{{ route('login') }}" class="brand-lockup brand-lockup--light" aria-label="Ir al inicio de sesión">
-                    <span class="brand-mark" aria-hidden="true">
-                        <span class="brand-mark__line"></span>
-                        <strong>Z</strong>
-                    </span>
-                    <span>
-                        <strong>ZOLIC</strong>
-                        <small>Gestión institucional</small>
-                    </span>
+                <a href="{{ route('login') }}" class="official-brand" aria-label="Ir al inicio de sesión">
+                    <img src="{{ asset('images/brand/logo-zolic-white.png') }}" alt="ZOLIC · Zona Libre de Industria y Comercio Santo Tomás de Castilla">
                 </a>
-
-                <div class="auth-brand__message">
-                    <span class="eyebrow eyebrow--light">Plataforma de servicio interno</span>
-                    <h1>Atención técnica<br>con orden y trazabilidad.</h1>
-                    <p>Un espacio seguro para centralizar solicitudes, proteger la información y dar seguimiento al servicio de tecnología.</p>
-                </div>
-
-                <div class="auth-trust">
-                    <div class="auth-trust__item">
-                        <span class="trust-icon" aria-hidden="true">01</span>
-                        <div>
-                            <strong>Acceso protegido</strong>
-                            <span>Control de intentos y sesiones</span>
-                        </div>
-                    </div>
-                    <div class="auth-trust__item">
-                        <span class="trust-icon" aria-hidden="true">02</span>
-                        <div>
-                            <strong>Actividad registrada</strong>
-                            <span>Trazabilidad de cada acceso</span>
-                        </div>
-                    </div>
-                </div>
-
-                <p class="auth-brand__footer">Zona Libre de Industria y Comercio Santo Tomás de Castilla</p>
             </div>
         </section>
 
         <section class="auth-panel">
             <div class="auth-mobile-brand">
-                <a href="{{ route('login') }}" class="brand-lockup">
-                    <span class="brand-mark" aria-hidden="true">
-                        <span class="brand-mark__line"></span>
-                        <strong>Z</strong>
-                    </span>
-                    <span>
-                        <strong>ZOLIC</strong>
-                        <small>Sistema de Tickets</small>
-                    </span>
+                <a href="{{ route('login') }}" class="official-brand official-brand--mobile">
+                    <img src="{{ asset('images/brand/logo-zolic-white.png') }}" alt="ZOLIC">
                 </a>
             </div>
 

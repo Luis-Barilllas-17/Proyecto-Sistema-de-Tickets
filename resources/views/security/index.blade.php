@@ -25,7 +25,7 @@
     <section class="panel admin-panel" id="usuarios">
         <div class="panel__header">
             <div>
-                <span class="panel__eyebrow">RF-003 · RF-005 · RF-007</span>
+                <span class="panel__eyebrow">Administración de acceso</span>
                 <h2>Cuentas institucionales</h2>
             </div>
             <div class="legend">
@@ -120,7 +120,7 @@
     <section class="panel admin-panel" id="sesiones">
         <div class="panel__header">
             <div>
-                <span class="panel__eyebrow">RF-006 · Gestión de sesiones</span>
+                <span class="panel__eyebrow">Gestión de sesiones</span>
                 <h2>Sesiones activas</h2>
             </div>
             <span class="panel-badge panel-badge--secure"><span class="security-pulse"></span> {{ $sessions->count() }} conectada(s)</span>
@@ -160,7 +160,7 @@
     <section class="panel admin-panel" id="bitacora">
         <div class="panel__header">
             <div>
-                <span class="panel__eyebrow">RF-008 · Registro de accesos</span>
+                <span class="panel__eyebrow">Registro de accesos</span>
                 <h2>Bitácora de seguridad</h2>
             </div>
             <span class="panel-badge">50 eventos recientes</span>

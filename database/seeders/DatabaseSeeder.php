@@ -53,5 +53,12 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call(SecurityDemoSeeder::class);
+        $this->call(ModuleTwoSeeder::class);
+        $this->call(ModuleThreeSeeder::class);
+        $this->call(ModuleFourSeeder::class);
+        $this->call(ModuleFiveSeeder::class);
+        $this->call(ModuleSixSeeder::class);
+        $this->call(ModuleSevenSeeder::class);
+        $this->call(ModuleEightSeeder::class);
     }
 }

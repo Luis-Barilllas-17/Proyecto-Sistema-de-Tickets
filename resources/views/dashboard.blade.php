@@ -4,9 +4,9 @@
 @section('section-title', 'Seguridad y acceso')
 
 @section('content')
-    <div class="page-heading">
+    <div class="page-heading dashboard-welcome">
         <div>
-            <span class="eyebrow">Módulo 1 · Autenticación</span>
+            <span class="eyebrow">Seguridad de acceso</span>
             <h1>Hola, {{ str(auth()->user()->name)->before(' ') }}</h1>
             <p>Consulta el estado de tu cuenta, tus sesiones y la actividad reciente.</p>
         </div>
@@ -90,13 +90,18 @@
 
         <aside class="panel security-summary">
             <div class="security-summary__hero">
-                <div class="security-score">
-                    <span class="security-score__ring">100<small>%</small></span>
+                <div class="security-lock" style="--security-score: {{ $securityScore }}%" aria-label="Nivel de protección {{ $securityScore }} por ciento">
+                    <span class="security-lock__ring" aria-hidden="true"></span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M7.5 10V7.5a4.5 4.5 0 0 1 9 0V10M6 10h12a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 18 21H6a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 6 10Z"/>
+                        <path d="M12 14v3"/>
+                    </svg>
+                    <strong>{{ $securityScore }}<small>%</small></strong>
                 </div>
                 <div>
                     <span class="panel__eyebrow">Estado de protección</span>
                     <h2>Cuenta protegida</h2>
-                    <p>Las políticas principales están activas.</p>
+                    <p><strong>{{ $securityControlsPassed }} de {{ $securityControlsTotal }}</strong> controles principales activos.</p>
                 </div>
             </div>
 

@@ -268,6 +268,9 @@ class AuthenticationModuleTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Cuenta protegida')
+            ->assertSee('6 de 6')
+            ->assertSee('data-page-loader', false)
+            ->assertSee('images/brand/logo-zolic-white.png')
             ->assertSee('Dispositivos con acceso');
 
         $this->actingAs($admin)

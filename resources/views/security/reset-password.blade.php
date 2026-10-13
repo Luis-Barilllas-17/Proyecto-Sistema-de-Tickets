@@ -7,7 +7,7 @@
     <div class="page-heading page-heading--compact">
         <div>
             <a href="{{ route('security.index') }}" class="back-link"><span aria-hidden="true">←</span> Volver al control de acceso</a>
-            <span class="eyebrow">RF-003 · Restablecimiento administrativo</span>
+            <span class="eyebrow">Restablecimiento administrativo</span>
             <h1>Restablecer contraseña</h1>
             <p>Define una clave temporal para el usuario seleccionado.</p>
         </div>

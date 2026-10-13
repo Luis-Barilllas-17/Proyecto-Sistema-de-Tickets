@@ -13,6 +13,18 @@ class DashboardController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
+        $institutionalDomains = config('security.institutional_domains', []);
+        $emailDomain = str($user->email)->afterLast('@')->lower()->toString();
+        $securityChecks = [
+            $user->isActive(),
+            ! $user->isLocked(),
+            $user->email_verified_at !== null,
+            in_array($emailDomain, $institutionalDomains, true),
+            config('security.max_login_attempts') > 0,
+            config('security.session_timeout_minutes') > 0,
+        ];
+        $securityControlsPassed = count(array_filter($securityChecks));
+        $securityControlsTotal = count($securityChecks);
 
         return view('dashboard', [
             'recentEvents' => SecurityEvent::where('user_id', $user->id)->latest()->limit(6)->get(),
@@ -26,6 +38,9 @@ class DashboardController extends Controller
                     ->whereIn('event', ['login_failed', 'login_blocked', 'account_locked'])
                     ->where('created_at', '>=', now()->subDays(7))
                     ->count(),
+            'securityControlsPassed' => $securityControlsPassed,
+            'securityControlsTotal' => $securityControlsTotal,
+            'securityScore' => (int) round(($securityControlsPassed / $securityControlsTotal) * 100),
         ]);
     }
 }
