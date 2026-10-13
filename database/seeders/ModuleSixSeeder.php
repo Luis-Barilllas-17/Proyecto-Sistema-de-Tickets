@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\Supply;
 use App\Models\TicketEquipmentLink;
 use App\Models\User;
+use Database\Seeders\Support\DemoNetworkAddress;
 use Illuminate\Database\Seeder;
 
 class ModuleSixSeeder extends Seeder
@@ -54,11 +55,11 @@ class ModuleSixSeeder extends Seeder
             return;
         }
         $definitions = [
-            ['ZOLIC-PC-001', 'computer', 'Estación de operaciones 01', 'Dell', 'OptiPlex 7090', 'DL7090-0001', '10.20.10.41', '00:1A:2B:3C:4D:01', 'OPE-PC-001', 'Operaciones', 'OPE', 'OPE-POR', 'usuario.ticket@zolicguate.com', 'assigned'],
-            ['ZOLIC-SRV-001', 'server', 'Servidor de aplicaciones institucionales', 'HPE', 'ProLiant DL380', 'HPE380-0001', '10.10.1.10', '00:1A:2B:3C:4D:02', 'SRV-APP-01', 'Centro de datos', 'IT-INF', 'INF-RED', 'infraestructura@zolicguate.com', 'assigned'],
-            ['ZOLIC-PRN-003', 'printer', 'Impresora de documentación portuaria', 'HP', 'LaserJet Enterprise', 'HPENT-0003', '10.20.10.75', '00:1A:2B:3C:4D:03', 'OPE-PRN-003', 'Operaciones Portuarias', 'OPE', 'OPE-POR', null, 'available'],
-            ['ZOLIC-SW-010', 'network_device', 'Switch de distribución administrativo', 'Cisco', 'Catalyst 9200', 'CSC9200-0010', '10.10.2.10', '00:1A:2B:3C:4D:04', 'SW-ADM-010', 'Cuarto de comunicaciones', 'IT-INF', 'INF-RED', 'infraestructura@zolicguate.com', 'maintenance'],
-            ['ZOLIC-LAP-021', 'computer', 'Portátil de desarrollo 21', 'Lenovo', 'ThinkPad T14', 'LNV-T14-0021', '10.30.4.21', '00:1A:2B:3C:4D:05', 'DEV-LAP-021', 'Desarrollo y Aplicaciones', 'IT-DEV', 'DEV-APP', 'aplicaciones@zolicguate.com', 'assigned'],
+            ['ZOLIC-PC-001', 'computer', 'Estación de operaciones 01', 'Dell', 'OptiPlex 7090', 'DL7090-0001', DemoNetworkAddress::ipv4(DemoNetworkAddress::OPERATIONS, 41), '00:1A:2B:3C:4D:01', 'OPE-PC-001', 'Operaciones', 'OPE', 'OPE-POR', 'usuario.ticket@zolicguate.com', 'assigned'],
+            ['ZOLIC-SRV-001', 'server', 'Servidor de aplicaciones institucionales', 'HPE', 'ProLiant DL380', 'HPE380-0001', DemoNetworkAddress::ipv4(DemoNetworkAddress::INFRASTRUCTURE, 10), '00:1A:2B:3C:4D:02', 'SRV-APP-01', 'Centro de datos', 'IT-INF', 'INF-RED', 'infraestructura@zolicguate.com', 'assigned'],
+            ['ZOLIC-PRN-003', 'printer', 'Impresora de documentación portuaria', 'HP', 'LaserJet Enterprise', 'HPENT-0003', DemoNetworkAddress::ipv4(DemoNetworkAddress::OPERATIONS, 75), '00:1A:2B:3C:4D:03', 'OPE-PRN-003', 'Operaciones Portuarias', 'OPE', 'OPE-POR', null, 'available'],
+            ['ZOLIC-SW-010', 'network_device', 'Switch de distribución administrativo', 'Cisco', 'Catalyst 9200', 'CSC9200-0010', DemoNetworkAddress::ipv4(DemoNetworkAddress::INFRASTRUCTURE, 20), '00:1A:2B:3C:4D:04', 'SW-ADM-010', 'Cuarto de comunicaciones', 'IT-INF', 'INF-RED', 'infraestructura@zolicguate.com', 'maintenance'],
+            ['ZOLIC-LAP-021', 'computer', 'Portátil de desarrollo 21', 'Lenovo', 'ThinkPad T14', 'LNV-T14-0021', DemoNetworkAddress::ipv4(DemoNetworkAddress::DEVELOPMENT, 21), '00:1A:2B:3C:4D:05', 'DEV-LAP-021', 'Desarrollo y Aplicaciones', 'IT-DEV', 'DEV-APP', 'aplicaciones@zolicguate.com', 'assigned'],
         ];
 
         foreach ($definitions as [$code, $type, $name, $brand, $model, $serial, $ip, $mac, $hostname, $location, $areaCode, $departmentCode, $email, $status]) {
