@@ -34,12 +34,12 @@
             <div class="maintenance-form-section__body">
                 <header><span>Periodicidad</span><h2>Programación y generación</h2></header>
                 <div class="form-grid form-grid--four">
-                    <div class="field"><label>Frecuencia <strong>*</strong></label><select name="frequency_months" required>@foreach(App\Models\MaintenancePlan::FREQUENCIES as $value=>$label)<option value="{{ $value }}" @selected((int)old('frequency_months',$plan?->frequency_months??3)===$value)>{{ $label }}</option>@endforeach</select></div>
-                    <div class="field"><label>Primera fecha <strong>*</strong></label><input type="date" name="first_due_date" value="{{ $firstDue }}" required><span class="field__hint">Se aplica a equipos nuevos del plan.</span></div>
-                    <div class="field"><label>Anticipación de orden <strong>*</strong></label><input type="number" name="lead_days" min="0" max="90" value="{{ old('lead_days',$plan?->lead_days??7) }}" required><span class="field__hint">Días antes de la fecha.</span></div>
-                    <div class="field"><label>Duración estimada <strong>*</strong></label><input type="number" name="duration_minutes" min="15" max="1440" value="{{ old('duration_minutes',$plan?->duration_minutes??60) }}" required><span class="field__hint">Minutos por equipo.</span></div>
-                    <div class="field"><label>Hora sugerida</label><input type="time" name="default_start_time" value="{{ old('default_start_time',$plan?->default_start_time ? substr($plan->default_start_time,0,5) : '') }}"></div>
-                    <label class="switch-field"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" @checked((bool)old('is_active',$plan?->is_active??true))><span></span><div><strong>Plan activo</strong><small>Permite generar nuevas órdenes.</small></div></label>
+                    <div class="field"><label for="plan-frequency">Frecuencia <strong>*</strong></label><select id="plan-frequency" name="frequency_months" required>@foreach(App\Models\MaintenancePlan::FREQUENCIES as $value=>$label)<option value="{{ $value }}" @selected((int)old('frequency_months',$plan?->frequency_months??3)===$value)>{{ $label }}</option>@endforeach</select></div>
+                    <div class="field"><label for="plan-first-due-date">Primera fecha <strong>*</strong></label><input id="plan-first-due-date" type="date" name="first_due_date" value="{{ $firstDue }}" required><span class="field__hint">Se aplica a equipos nuevos del plan.</span></div>
+                    <div class="field"><label for="plan-lead-days">Anticipación de orden <strong>*</strong></label><input id="plan-lead-days" type="number" name="lead_days" min="0" max="90" value="{{ old('lead_days',$plan?->lead_days??7) }}" required><span class="field__hint">Días antes de la fecha.</span></div>
+                    <div class="field"><label for="plan-duration">Duración estimada <strong>*</strong></label><input id="plan-duration" type="number" name="duration_minutes" min="15" max="1440" value="{{ old('duration_minutes',$plan?->duration_minutes??60) }}" required><span class="field__hint">Minutos por equipo.</span></div>
+                    <div class="field"><label for="plan-start-time">Hora sugerida</label><input id="plan-start-time" type="time" name="default_start_time" value="{{ old('default_start_time',$plan?->default_start_time ? substr($plan->default_start_time,0,5) : '') }}"></div>
+                    <label class="switch-field" for="plan-active"><input type="hidden" name="is_active" value="0"><input id="plan-active" type="checkbox" name="is_active" value="1" @checked((bool)old('is_active',$plan?->is_active??true))><span></span><div><strong>Plan activo</strong><small>Permite generar nuevas órdenes.</small></div></label>
                 </div>
             </div>
         </section>
@@ -49,9 +49,9 @@
             <div class="maintenance-form-section__body">
                 <header><span>Responsabilidad</span><h2>Equipo técnico asignado</h2></header>
                 <div class="form-grid form-grid--three">
-                    <div class="field"><label>Área de IT</label><select name="assigned_it_area_id"><option value="">Sin asignación específica</option>@foreach($itAreas as $area)<option value="{{ $area->id }}" @selected(old('assigned_it_area_id',$plan?->assigned_it_area_id)==$area->id)>{{ $area->name }}</option>@endforeach</select></div>
-                    <div class="field"><label>Grupo técnico</label><select name="assigned_it_group_id"><option value="">Sin grupo específico</option>@foreach($groups as $group)<option value="{{ $group->id }}" @selected(old('assigned_it_group_id',$plan?->assigned_it_group_id)==$group->id)>{{ $group->name }}</option>@endforeach</select></div>
-                    <div class="field"><label>Técnico responsable</label><select name="assigned_user_id"><option value="">Asignación por grupo</option>@foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected(old('assigned_user_id',$plan?->assigned_user_id)==$technician->id)>{{ $technician->name }}</option>@endforeach</select></div>
+                    <div class="field"><label for="plan-it-area">Área de IT</label><select id="plan-it-area" name="assigned_it_area_id"><option value="">Sin asignación específica</option>@foreach($itAreas as $area)<option value="{{ $area->id }}" @selected(old('assigned_it_area_id',$plan?->assigned_it_area_id)==$area->id)>{{ $area->name }}</option>@endforeach</select></div>
+                    <div class="field"><label for="plan-it-group">Grupo técnico</label><select id="plan-it-group" name="assigned_it_group_id"><option value="">Sin grupo específico</option>@foreach($groups as $group)<option value="{{ $group->id }}" @selected(old('assigned_it_group_id',$plan?->assigned_it_group_id)==$group->id)>{{ $group->name }}</option>@endforeach</select></div>
+                    <div class="field"><label for="plan-technician">Técnico responsable</label><select id="plan-technician" name="assigned_user_id"><option value="">Asignación por grupo</option>@foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected(old('assigned_user_id',$plan?->assigned_user_id)==$technician->id)>{{ $technician->name }}</option>@endforeach</select></div>
                 </div>
             </div>
         </section>
@@ -62,7 +62,7 @@
                 <header><span>Equipos</span><h2>Activos incluidos</h2><p>Selecciona los activos que seguirán esta programación.</p></header>
                 <div class="maintenance-equipment-picker">
                     @foreach($equipment as $asset)
-                        <label><input type="checkbox" name="equipment_ids[]" value="{{ $asset->id }}" @checked($selectedEquipment->contains($asset->id))><span class="maintenance-equipment-picker__check">✓</span><div><strong>{{ $asset->inventory_code }} · {{ $asset->name }}</strong><small>{{ $asset->department?->name ?: $asset->area?->name }} · {{ $asset->location }}</small></div><em>{{ $asset->type_label }}</em></label>
+                        <label for="plan-equipment-{{ $asset->id }}"><input id="plan-equipment-{{ $asset->id }}" type="checkbox" name="equipment_ids[]" value="{{ $asset->id }}" @checked($selectedEquipment->contains($asset->id))><span class="maintenance-equipment-picker__check">✓</span><div><strong>{{ $asset->inventory_code }} · {{ $asset->name }}</strong><small>{{ $asset->department?->name ?: $asset->area?->name }} · {{ $asset->location }}</small></div><em>{{ $asset->type_label }}</em></label>
                     @endforeach
                 </div>
             </div>

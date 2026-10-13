@@ -23,9 +23,9 @@
         <section class="panel inventory-catalog">
             <div class="panel__header"><div><span class="panel__eyebrow">Catálogo</span><h2>Equipos tecnológicos</h2></div><span class="count-pill">{{ $equipment->total() }} activos</span></div>
             <form method="GET" class="inventory-filter">
-                <div class="input-shell"><input name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Código, nombre, serie o hostname"><span>⌕</span></div>
-                <select name="type"><option value="">Todos los tipos</option>@foreach(App\Models\Equipment::TYPES as $value => $label)<option value="{{ $value }}" @selected(($filters['type'] ?? '') === $value)>{{ $label }}</option>@endforeach</select>
-                <select name="status"><option value="">Todos los estados</option>@foreach(App\Models\Equipment::STATUSES as $value => $label)<option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>@endforeach</select>
+                <label class="sr-only" for="inventory-search">Buscar equipos</label><div class="input-shell"><input id="inventory-search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Código, nombre, serie o hostname"><span>⌕</span></div>
+                <label class="sr-only" for="inventory-type">Tipo de equipo</label><select id="inventory-type" name="type"><option value="">Todos los tipos</option>@foreach(App\Models\Equipment::TYPES as $value => $label)<option value="{{ $value }}" @selected(($filters['type'] ?? '') === $value)>{{ $label }}</option>@endforeach</select>
+                <label class="sr-only" for="inventory-status">Estado del equipo</label><select id="inventory-status" name="status"><option value="">Todos los estados</option>@foreach(App\Models\Equipment::STATUSES as $value => $label)<option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>@endforeach</select>
                 <button class="button button--primary">Filtrar</button>
                 @if(array_filter($filters))<a href="{{ route('inventory.index') }}" class="button button--ghost">Limpiar</a>@endif
             </form>
