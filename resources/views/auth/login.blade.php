@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="auth-heading">
-        <span class="auth-kicker">Acceso institucional</span>
         <h2>Bienvenido de nuevo</h2>
         <p>Ingresa tus credenciales para acceder al sistema.</p>
     </div>
@@ -56,8 +55,4 @@
         </button>
     </form>
 
-    <div class="auth-note">
-        <span class="auth-note__shield" aria-hidden="true">✓</span>
-        <p><strong>Conexión segura</strong><br>Los accesos e intentos fallidos quedan registrados.</p>
-    </div>
 @endsection

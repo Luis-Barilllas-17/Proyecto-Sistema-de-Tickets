@@ -22,7 +22,9 @@ class AuthenticationModuleTest extends TestCase
         $this->get(route('login'))
             ->assertOk()
             ->assertSee('Bienvenido de nuevo')
-            ->assertSee('Correo institucional');
+            ->assertSee('Correo institucional')
+            ->assertDontSee('Acceso institucional')
+            ->assertDontSee('Conexión segura');
     }
 
     public function test_active_user_can_login_and_access_is_audited(): void

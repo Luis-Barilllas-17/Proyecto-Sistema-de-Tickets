@@ -22,6 +22,15 @@ class UserManagementController extends Controller
 {
     public function index(Request $request): View
     {
+        $metrics = [
+            'total' => User::count(),
+            'active' => User::where('status', 'active')->count(),
+            'technical' => User::whereHas('roles', fn ($query) => $query->whereIn('slug', [
+                'jefatura-it', 'encargado-area-it', 'tecnico-it', 'programador-it',
+            ]))->count(),
+            'restricted' => User::whereIn('status', ['suspended', 'inactive'])->count(),
+        ];
+
         $users = User::query()
             ->with(['roles', 'area', 'department'])
             ->withCount('technicalGroups')
@@ -47,6 +56,7 @@ class UserManagementController extends Controller
             'users' => $users,
             'roles' => Role::where('is_active', true)->orderBy('name')->get(),
             'areas' => Area::where('is_active', true)->orderBy('name')->get(),
+            'metrics' => $metrics,
         ]);
     }
 

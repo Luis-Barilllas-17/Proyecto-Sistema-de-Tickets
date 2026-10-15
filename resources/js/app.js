@@ -35,6 +35,22 @@ document.querySelectorAll('[data-reset-page-loader]').forEach((form) => {
     });
 });
 
+document.querySelectorAll('[data-logout-submit]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+        const form = button.form;
+
+        if (!form) return;
+
+        event.preventDefault();
+        form.setAttribute('method', 'post');
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
+    });
+});
+
 const sidebar = document.querySelector('#sidebar');
 const overlay = document.querySelector('.sidebar-overlay');
 

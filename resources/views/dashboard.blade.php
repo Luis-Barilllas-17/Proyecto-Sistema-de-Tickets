@@ -1,9 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Resumen de seguridad')
-@section('section-title', 'Seguridad y acceso')
+@section('title', $requesterPortal ? 'Mis solicitudes' : 'Resumen de seguridad')
+@section('section-title', $requesterPortal ? 'Portal de solicitudes' : 'Seguridad y acceso')
 
 @section('content')
+    @if ($requesterPortal)
+        @include('dashboard-requester')
+    @else
     <div class="page-heading dashboard-welcome">
         <div>
             <span class="eyebrow">Seguridad de acceso</span>
@@ -163,4 +166,5 @@
             @endforelse
         </div>
     </section>
+    @endif
 @endsection

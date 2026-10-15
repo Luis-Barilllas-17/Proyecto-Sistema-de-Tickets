@@ -18,10 +18,22 @@ class TechnicalGroupController extends Controller
 {
     public function index(Request $request): View
     {
+        $groups = TechnicalGroup::with(['area', 'coordinator', 'members.roles'])
+            ->withCount('members')
+            ->orderBy('name')
+            ->get();
+        $specialties = Specialty::withCount('users')->orderBy('type')->orderBy('name')->get();
+
         return view('administration.groups.index', [
-            'groups' => TechnicalGroup::with(['area', 'coordinator', 'members.roles'])->withCount('members')->orderBy('name')->get(),
-            'specialties' => Specialty::withCount('users')->orderBy('type')->orderBy('name')->get(),
+            'groups' => $groups,
+            'specialties' => $specialties,
             'editingSpecialty' => $request->integer('edit_specialty') ? Specialty::findOrFail($request->integer('edit_specialty')) : null,
+            'metrics' => [
+                'active_groups' => $groups->where('is_active', true)->count(),
+                'members' => $groups->flatMap->members->unique('id')->count(),
+                'areas' => $groups->pluck('area_id')->filter()->unique()->count(),
+                'specialties' => $specialties->where('is_active', true)->count(),
+            ],
         ]);
     }
 

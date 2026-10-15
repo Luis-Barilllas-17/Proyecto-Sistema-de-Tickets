@@ -15,7 +15,30 @@
         @endif
     </div>
 
+    <section class="people-metrics" aria-label="Resumen del directorio institucional">
+        <article class="people-metric people-metric--navy">
+            <span class="people-metric__mark" aria-hidden="true">01</span>
+            <div><small>Directorio total</small><strong>{{ $metrics['total'] }}</strong><span>Cuentas registradas</span></div>
+        </article>
+        <article class="people-metric people-metric--teal">
+            <span class="people-metric__mark" aria-hidden="true">02</span>
+            <div><small>Usuarios activos</small><strong>{{ $metrics['active'] }}</strong><span>Con acceso habilitado</span></div>
+        </article>
+        <article class="people-metric people-metric--blue">
+            <span class="people-metric__mark" aria-hidden="true">03</span>
+            <div><small>Personal de IT</small><strong>{{ $metrics['technical'] }}</strong><span>Jefaturas y equipo técnico</span></div>
+        </article>
+        <article class="people-metric people-metric--orange">
+            <span class="people-metric__mark" aria-hidden="true">04</span>
+            <div><small>Acceso restringido</small><strong>{{ $metrics['restricted'] }}</strong><span>Suspendidos o inactivos</span></div>
+        </article>
+    </section>
+
     <section class="panel directory-panel">
+        <header class="directory-panel__header">
+            <div><span class="panel__eyebrow">Consulta de cuentas</span><h2>Directorio de usuarios</h2></div>
+            <span class="directory-panel__hint">Utiliza los filtros para localizar una cuenta institucional</span>
+        </header>
         <form action="{{ route('administration.users.index') }}" method="GET" class="directory-filters">
             <label class="search-control">
                 <span class="sr-only">Buscar usuario</span>
@@ -65,20 +88,20 @@
                             <td>
                                 <div class="user-cell">
                                     <span class="avatar avatar--table">{{ str($user->name)->substr(0, 1)->upper() }}</span>
-                                    <div><strong>{{ $user->name }}</strong><span>{{ $user->employee_code ?? 'Sin código' }} · {{ $user->email }}</span></div>
+                                    <div><strong>{{ $user->name }}</strong><span>{{ $user->email }}</span><small>{{ $user->employee_code ?? 'Sin código institucional' }}{{ $user->job_title ? ' · '.$user->job_title : '' }}</small></div>
                                 </div>
                             </td>
-                            <td><div class="role-chip-list">@foreach ($user->roles as $role)<span>{{ $role->name }}</span>@endforeach</div></td>
+                            <td><div class="role-chip-list">@forelse ($user->roles as $role)<span>{{ $role->name }}</span>@empty<span class="role-chip-list__empty">Sin perfil</span>@endforelse</div></td>
                             <td><div class="date-cell"><strong>{{ $user->area?->name ?? 'Sin área asignada' }}</strong><span>{{ $user->department?->name ?? $user->job_title ?? 'Sin departamento' }}</span></div></td>
                             <td><span class="status-badge status-badge--{{ $user->status }}"><i></i>{{ $user->status === 'active' ? 'Activo' : ($user->status === 'suspended' ? 'Suspendido' : 'Inactivo') }}</span></td>
                             <td><div class="date-cell"><strong>{{ $user->last_login_at?->format('d/m/Y H:i') ?? 'Sin accesos' }}</strong><span>{{ $user->last_login_ip ?? '—' }}</span></div></td>
                             <td>
                                 <div class="table-actions">
                                     @if (auth()->user()->hasPermission('users.update'))
-                                        <a href="{{ route('administration.users.edit', $user) }}" class="button button--outline button--small">Editar</a>
+                                        <a href="{{ route('administration.users.edit', $user) }}" class="button button--outline button--small">Editar perfil</a>
                                     @endif
                                     @if (auth()->user()->hasPermission('users.reset_password'))
-                                        <a href="{{ route('security.password.edit', $user) }}" class="table-more-link" title="Restablecer contraseña">Acceso</a>
+                                        <a href="{{ route('security.password.edit', $user) }}" class="table-more-link" title="Administrar el acceso de {{ $user->name }}">Acceso</a>
                                     @endif
                                 </div>
                             </td>
