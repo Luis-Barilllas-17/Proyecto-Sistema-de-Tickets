@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\SecurityEvent;
 use App\Models\User;
+use App\Services\TurnstileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,16 +22,30 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, TurnstileService $turnstile): RedirectResponse
     {
-        $credentials = $request->validate([
+        $rules = [
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string'],
-        ], [
+        ];
+
+        if ($turnstile->enabled()) {
+            $rules['cf-turnstile-response'] = ['required', 'string', 'max:2048'];
+        }
+
+        $credentials = $request->validate($rules, [
             'email.required' => 'Ingresa tu correo institucional.',
             'email.email' => 'Ingresa un correo electrónico válido.',
             'password.required' => 'Ingresa tu contraseña.',
+            'cf-turnstile-response.required' => 'Completa la verificación de seguridad.',
+            'cf-turnstile-response.max' => 'La verificación de seguridad no es válida.',
         ]);
+
+        if ($turnstile->enabled() && ! $turnstile->verify($credentials['cf-turnstile-response'], $request->ip())) {
+            throw ValidationException::withMessages([
+                'cf-turnstile-response' => 'No fue posible validar la verificación de seguridad. Inténtalo nuevamente.',
+            ]);
+        }
 
         $email = Str::lower(trim($credentials['email']));
         $this->ensureInstitutionalEmail($email);

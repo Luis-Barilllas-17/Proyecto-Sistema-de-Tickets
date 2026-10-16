@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Acceso seguro al Sistema de Gestión de Tickets ZOLIC">
     <title>@yield('title', 'Acceso') | Sistema de Tickets ZOLIC</title>
+    @stack('head')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="guest-page">

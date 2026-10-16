@@ -6,8 +6,10 @@ use App\Models\SecurityEvent;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
@@ -24,7 +26,114 @@ class AuthenticationModuleTest extends TestCase
             ->assertSee('Bienvenido de nuevo')
             ->assertSee('Correo institucional')
             ->assertDontSee('Acceso institucional')
-            ->assertDontSee('Conexión segura');
+            ->assertDontSee('Conexión segura')
+            ->assertDontSee('cf-turnstile', false)
+            ->assertDontSee('challenges.cloudflare.com', false);
+    }
+
+    public function test_turnstile_widget_and_csp_are_enabled_by_configuration(): void
+    {
+        config()->set([
+            'turnstile.enabled' => true,
+            'turnstile.site_key' => 'production-site-key',
+            'turnstile.expected_action' => 'login',
+        ]);
+
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('class="cf-turnstile"', false)
+            ->assertSee('data-sitekey="production-site-key"', false)
+            ->assertSee('data-action="login"', false)
+            ->assertHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://challenges.cloudflare.com; font-src 'self' data:; connect-src 'self'; frame-src 'self' https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+    }
+
+    public function test_turnstile_token_is_required_when_enabled(): void
+    {
+        Http::fake();
+        config()->set([
+            'turnstile.enabled' => true,
+            'turnstile.secret_key' => 'production-secret-key',
+        ]);
+        $user = User::factory()->create([
+            'email' => 'captcha.requerido@zolicguate.com',
+            'password' => Hash::make('Acceso#2026'),
+        ]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'Acceso#2026',
+        ])->assertSessionHasErrors('cf-turnstile-response');
+
+        $this->assertGuest();
+        Http::assertNothingSent();
+    }
+
+    public function test_valid_turnstile_token_allows_login_after_server_verification(): void
+    {
+        config()->set([
+            'turnstile.enabled' => true,
+            'turnstile.secret_key' => 'production-secret-key',
+            'turnstile.expected_hostname' => 'tickets.zolicguate.com',
+            'turnstile.expected_action' => 'login',
+        ]);
+        Http::fake([
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+                'success' => true,
+                'hostname' => 'tickets.zolicguate.com',
+                'action' => 'login',
+                'error-codes' => [],
+            ]),
+        ]);
+        $user = User::factory()->create([
+            'email' => 'captcha.valido@zolicguate.com',
+            'password' => Hash::make('Acceso#2026'),
+        ]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'Acceso#2026',
+            'cf-turnstile-response' => 'valid-turnstile-token',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertAuthenticatedAs($user);
+        Http::assertSent(function (ClientRequest $request): bool {
+            $data = $request->data();
+
+            return $request->method() === 'POST'
+                && $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+                && ($data['secret'] ?? null) === 'production-secret-key'
+                && ($data['response'] ?? null) === 'valid-turnstile-token'
+                && filled($data['idempotency_key'] ?? null);
+        });
+    }
+
+    public function test_turnstile_rejects_a_token_for_an_unexpected_action(): void
+    {
+        config()->set([
+            'turnstile.enabled' => true,
+            'turnstile.secret_key' => 'production-secret-key',
+            'turnstile.expected_hostname' => 'tickets.zolicguate.com',
+            'turnstile.expected_action' => 'login',
+        ]);
+        Http::fake([
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+                'success' => true,
+                'hostname' => 'tickets.zolicguate.com',
+                'action' => 'otro-formulario',
+            ]),
+        ]);
+        $user = User::factory()->create([
+            'email' => 'captcha.invalido@zolicguate.com',
+            'password' => Hash::make('Acceso#2026'),
+        ]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'Acceso#2026',
+            'cf-turnstile-response' => 'wrong-action-token',
+        ])->assertSessionHasErrors('cf-turnstile-response');
+
+        $this->assertGuest();
     }
 
     public function test_active_user_can_login_and_access_is_audited(): void

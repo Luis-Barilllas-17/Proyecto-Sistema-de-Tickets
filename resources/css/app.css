@@ -1274,6 +1274,31 @@ select:focus-visible {
     gap: 21px;
 }
 
+.turnstile-field {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.turnstile-field__label {
+    color: var(--ink);
+    font-size: 0.81rem;
+    font-weight: 700;
+}
+
+.turnstile-field .cf-turnstile {
+    width: 100%;
+    min-height: 65px;
+}
+
+.field-error {
+    color: var(--danger);
+    font-size: 0.7rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
 .field {
     display: flex;
     flex-direction: column;

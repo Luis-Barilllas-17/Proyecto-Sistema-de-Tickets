@@ -11,6 +11,7 @@ class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
+        $turnstileOrigin = config('turnstile.enabled') ? ' https://challenges.cloudflare.com' : '';
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
@@ -20,7 +21,7 @@ class SecurityHeaders
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
         $response->headers->set(
             'Content-Security-Policy',
-            "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+            "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'{$turnstileOrigin}; font-src 'self' data:; connect-src 'self'; frame-src 'self'{$turnstileOrigin}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         );
 
         return $response;

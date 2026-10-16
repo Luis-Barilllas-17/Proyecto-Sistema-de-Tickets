@@ -2,6 +2,13 @@
 
 @section('title', 'Inicio de sesión')
 
+@push('head')
+    @if (config('turnstile.enabled'))
+        <link rel="preconnect" href="https://challenges.cloudflare.com">
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    @endif
+@endpush
+
 @section('content')
     <div class="auth-heading">
         <h2>Bienvenido de nuevo</h2>
@@ -48,6 +55,24 @@
                 </button>
             </div>
         </div>
+
+        @if (config('turnstile.enabled'))
+            <div class="turnstile-field">
+                <span class="turnstile-field__label">Verificación de seguridad</span>
+                <div
+                    class="cf-turnstile"
+                    data-sitekey="{{ config('turnstile.site_key') }}"
+                    data-theme="light"
+                    data-size="flexible"
+                    data-language="es"
+                    data-action="{{ config('turnstile.expected_action') }}"
+                    aria-label="Verificación de seguridad de Cloudflare Turnstile"
+                ></div>
+                @error('cf-turnstile-response')
+                    <span class="field-error" role="alert">{{ $message }}</span>
+                @enderror
+            </div>
+        @endif
 
         <button type="submit" class="button button--primary button--full">
             Ingresar al sistema
