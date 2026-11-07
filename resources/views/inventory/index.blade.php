@@ -30,10 +30,10 @@
                 @if(array_filter($filters))<a href="{{ route('inventory.index') }}" class="button button--ghost">Limpiar</a>@endif
             </form>
 
-            <div class="inventory-table-wrap"><table class="inventory-table"><thead><tr><th>Activo</th><th>Identificación</th><th>Ubicación</th><th>Responsable</th><th>Estado</th><th></th></tr></thead><tbody>
+            <x-horizontal-scroll id="inventory-equipment-table" label="Equipos tecnológicos" class="inventory-table-wrap"><table class="inventory-table"><thead><tr><th>Activo</th><th>Identificación</th><th>Ubicación</th><th>Responsable</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
                 @forelse($equipment as $asset)
                     <tr>
-                        <td><span class="asset-type-mark asset-type-mark--{{ $asset->asset_type }}">{{ ['computer'=>'PC','server'=>'SV','printer'=>'PR','network_device'=>'NW','phone'=>'TL','peripheral'=>'PF','other'=>'OT'][$asset->asset_type] }}</span><div><strong>{{ $asset->name }}</strong><small>{{ $asset->type_label }}</small></div></td>
+                        <td><div class="inventory-asset-cell"><span class="asset-type-mark asset-type-mark--{{ $asset->asset_type }}">{{ ['computer'=>'PC','server'=>'SV','printer'=>'PR','network_device'=>'NW','phone'=>'TL','peripheral'=>'PF','other'=>'OT'][$asset->asset_type] }}</span><div><strong>{{ $asset->name }}</strong><small>{{ $asset->type_label }}</small></div></div></td>
                         <td><b>{{ $asset->inventory_code }}</b><small>{{ $asset->brand }} {{ $asset->model }}@if($asset->serial_number) · S/N {{ $asset->serial_number }}@endif</small></td>
                         <td><strong>{{ $asset->location }}</strong><small>{{ $asset->area?->name }}@if($asset->department) · {{ $asset->department->name }}@endif</small></td>
                         <td><strong>{{ $asset->responsible?->name ?: 'Sin responsable' }}</strong><small>{{ $asset->hostname ?: 'Sin hostname' }}</small></td>
@@ -43,7 +43,7 @@
                 @empty
                     <tr><td colspan="6"><div class="empty-state"><strong>No se encontraron equipos</strong><p>Ajusta los filtros o registra el primer activo tecnológico.</p></div></td></tr>
                 @endforelse
-            </tbody></table></div>
+            </tbody></table></x-horizontal-scroll>
             @if($equipment->hasPages())<div class="pagination-wrap">{{ $equipment->links() }}</div>@endif
         </section>
 

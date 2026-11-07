@@ -1,0 +1,329 @@
+<svg role="img" aria-labelledby="er-title" width="1121pt" height="945pt"
+ viewBox="0.00 0.00 1121.00 945.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title id="er-title">Modelo esencial: 12 entidades y 13 relaciones</title>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 923.4)">
+<title>esencial</title>
+<polygon fill="white" stroke="none" points="-21.6,21.6 -21.6,-923.4 1099.84,-923.4 1099.84,21.6 -21.6,21.6"/>
+<!-- roles&#45;&gt;users -->
+<g id="edge11" class="edge">
+<title>roles&#45;&gt;users</title>
+<g id="a_edge11"><a xlink:title="Relacion N:M mediante role_user">
+<path fill="none" stroke="#007777" stroke-dasharray="5,2" d="M80.41,-616.1C111.17,-616.1 154.32,-616.1 188.29,-616.1"/>
+<polygon fill="#007777" stroke="#007777" points="194.61,-616.1 188.11,-619.03 192.58,-616.1 188.11,-616.1 188.11,-616.1 188.11,-616.1 192.58,-616.1 188.11,-613.18 194.61,-616.1"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="132.82" y="-634.1" font-family="Arial" font-size="12.00" fill="#294866">asigna roles</text>
+<text xml:space="preserve" text-anchor="middle" x="132.82" y="-619.7" font-family="Arial" font-size="12.00" fill="#294866">0..N : 0..N</text>
+</g>
+<!-- users&#45;&gt;tickets -->
+<g id="edge1" class="edge">
+<title>users&#45;&gt;tickets</title>
+<g id="a_edge1"><a xlink:title="tickets.requester_id">
+<path fill="none" stroke="#6c8298" d="M290.07,-602.13C327.03,-590.94 372.73,-577.1 372.73,-577.1 372.73,-577.1 378.63,-570.96 387.63,-561.6"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="392.09,-556.96 389.69,-563.68 390.68,-558.43 387.58,-561.65 387.58,-561.65 387.58,-561.65 390.68,-558.43 385.47,-559.62 392.09,-556.96"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-609.96" font-family="Arial" font-size="12.00" fill="#294866">solicita</text>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-595.56" font-family="Arial" font-size="12.00" fill="#294866">1 : 0..N</text>
+</g>
+<!-- users&#45;&gt;tickets -->
+<g id="edge2" class="edge">
+<title>users&#45;&gt;tickets</title>
+<g id="a_edge2"><a xlink:title="tickets.current_assignee_id">
+<path fill="none" stroke="#6c8298" d="M289.93,-571.89C306.27,-556.17 320.71,-542.3 320.71,-542.3 320.71,-542.3 351.75,-527.61 386.21,-511.3"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="392.03,-508.54 387.41,-513.97 390.2,-509.41 386.16,-511.33 386.16,-511.33 386.16,-511.33 390.2,-509.41 384.91,-508.68 392.03,-508.54"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-560.3" font-family="Arial" font-size="12.00" fill="#294866">atiende</text>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-545.9" font-family="Arial" font-size="12.00" fill="#294866">0..1 : 0..N</text>
+</g>
+<!-- ticket_categories&#45;&gt;tickets -->
+<g id="edge3" class="edge">
+<title>ticket_categories&#45;&gt;tickets</title>
+<g id="a_edge3"><a xlink:title="tickets.ticket_category_id">
+<path fill="none" stroke="#6c8298" d="M298.7,-468.1C324.55,-468.1 356.12,-468.1 385.49,-468.1"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="391.69,-468.1 385.19,-471.03 389.66,-468.1 385.19,-468.1 385.19,-468.1 385.19,-468.1 389.66,-468.1 385.19,-465.18 391.69,-468.1"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-486.1" font-family="Arial" font-size="12.00" fill="#294866">clasifica</text>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-471.7" font-family="Arial" font-size="12.00" fill="#294866">1 : 0..N</text>
+</g>
+<!-- ticket_statuses&#45;&gt;tickets -->
+<g id="edge4" class="edge">
+<title>ticket_statuses&#45;&gt;tickets</title>
+<g id="a_edge4"><a xlink:title="tickets.ticket_status_id">
+<path fill="none" stroke="#6c8298" d="M293.47,-362.52C320.59,-378.08 355.04,-397.84 386.79,-416.06"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="392.04,-419.07 384.95,-418.37 390.28,-418.06 386.4,-415.83 386.4,-415.83 386.4,-415.83 390.28,-418.06 387.86,-413.3 392.04,-419.07"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-423.12" font-family="Arial" font-size="12.00" fill="#294866">estado</text>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-408.72" font-family="Arial" font-size="12.00" fill="#294866">0..1 : 0..N</text>
+</g>
+<!-- ticket_priorities&#45;&gt;tickets -->
+<g id="edge5" class="edge">
+<title>ticket_priorities&#45;&gt;tickets</title>
+<g id="a_edge5"><a xlink:title="tickets.ticket_priority_id">
+<path fill="none" stroke="#6c8298" d="M291.53,-254.12C328.22,-295.77 372.73,-346.3 372.73,-346.3 372.73,-346.3 379.11,-353.71 388.72,-364.89"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="392.89,-369.73 386.43,-366.71 391.56,-368.19 388.65,-364.8 388.65,-364.8 388.65,-364.8 391.56,-368.19 390.87,-362.9 392.89,-369.73"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-364.3" font-family="Arial" font-size="12.00" fill="#294866">prioridad</text>
+<text xml:space="preserve" text-anchor="middle" x="346.72" y="-349.9" font-family="Arial" font-size="12.00" fill="#294866">0..1 : 0..N</text>
+</g>
+<!-- tickets&#45;&gt;ticket_comments -->
+<g id="edge6" class="edge">
+<title>tickets&#45;&gt;ticket_comments</title>
+<g id="a_edge6"><a xlink:title="ticket_comments.ticket_id">
+<path fill="none" stroke="#6c8298" d="M540.74,-565.14C563.67,-601.47 584.26,-634.1 584.26,-634.1 584.26,-634.1 655.3,-706.82 711.48,-764.35"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="716.02,-768.99 709.39,-766.38 714.6,-767.54 711.48,-764.34 711.48,-764.34 711.48,-764.34 714.6,-767.54 713.57,-762.3 716.02,-768.99"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-751.6" font-family="Arial" font-size="12.00" fill="#294866">comentarios</text>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-737.2" font-family="Arial" font-size="12.00" fill="#294866">1 : 0..N</text>
+</g>
+<!-- tickets&#45;&gt;ticket_approvals -->
+<g id="edge7" class="edge">
+<title>tickets&#45;&gt;ticket_approvals</title>
+<g id="a_edge7"><a xlink:title="ticket_approvals.ticket_id">
+<path fill="none" stroke="#6c8298" d="M564.02,-525.46C608.81,-555.85 663.27,-592.81 706.12,-621.89"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="711.35,-625.43 704.33,-624.2 709.67,-624.29 705.97,-621.78 705.97,-621.78 705.97,-621.78 709.67,-624.29 707.61,-619.36 711.35,-625.43"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-617.64" font-family="Arial" font-size="12.00" fill="#294866">aprobaciones</text>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-603.24" font-family="Arial" font-size="12.00" fill="#294866">1 : 0..N</text>
+</g>
+<!-- tickets&#45;&gt;development_requests -->
+<g id="edge8" class="edge">
+<title>tickets&#45;&gt;development_requests</title>
+<g id="a_edge8"><a xlink:title="development_requests.ticket_id">
+<path fill="none" stroke="#6c8298" d="M564.02,-479.68C604.76,-485.27 653.51,-491.95 694.23,-497.53"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="700.54,-498.4 693.7,-500.41 698.52,-498.12 694.1,-497.51 694.1,-497.51 694.1,-497.51 698.52,-498.12 694.49,-494.61 700.54,-498.4"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-512.67" font-family="Arial" font-size="12.00" fill="#294866">desarrollo</text>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-498.27" font-family="Arial" font-size="12.00" fill="#294866">1 : 0..1</text>
+</g>
+<!-- tickets&#45;&gt;equipment -->
+<g id="edge12" class="edge">
+<title>tickets&#45;&gt;equipment</title>
+<g id="a_edge12"><a xlink:title="Relacion N:M mediante ticket_equipment_links">
+<path fill="none" stroke="#007777" stroke-dasharray="5,2" d="M564.02,-433.91C607.55,-416.3 660.22,-395 702.48,-377.9"/>
+<polygon fill="#007777" stroke="#007777" points="708.31,-375.55 703.39,-380.7 706.43,-376.31 702.29,-377.98 702.29,-377.98 702.29,-377.98 706.43,-376.31 701.19,-375.27 708.31,-375.55"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-443.51" font-family="Arial" font-size="12.00" fill="#294866">equipos afectados</text>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-429.11" font-family="Arial" font-size="12.00" fill="#294866">0..N : 0..N</text>
+</g>
+<!-- tickets&#45;&gt;supplies -->
+<g id="edge13" class="edge">
+<title>tickets&#45;&gt;supplies</title>
+<g id="a_edge13"><a xlink:title="Relacion N:M mediante ticket_supply_usages">
+<path fill="none" stroke="#007777" stroke-dasharray="5,2" d="M564.06,-377.05C575.98,-364.22 584.26,-355.3 584.26,-355.3 584.26,-355.3 651.51,-296.41 706.9,-247.92"/>
+<polygon fill="#007777" stroke="#007777" points="711.65,-243.76 708.68,-250.24 710.12,-245.1 706.76,-248.04 706.76,-248.04 706.76,-248.04 710.12,-245.1 704.83,-245.84 711.65,-243.76"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-373.3" font-family="Arial" font-size="12.00" fill="#294866">utiliza</text>
+<text xml:space="preserve" text-anchor="middle" x="632.97" y="-358.9" font-family="Arial" font-size="12.00" fill="#294866">0..N : 0..N</text>
+</g>
+<!-- tickets&#45;&gt;maintenance_orders -->
+<g id="edge9" class="edge">
+<title>tickets&#45;&gt;maintenance_orders</title>
+<g id="a_edge9"><a xlink:title="maintenance_orders.ticket_id">
+<path fill="none" stroke="#6c8298" d="M529.43,-370.88C556.41,-318.34 584.26,-264.1 584.26,-264.1 584.26,-264.1 701.67,-75.3 701.67,-75.3 701.67,-75.3 857.61,-75.3 857.61,-75.3 857.61,-75.3 893.14,-77.16 929.47,-79.07"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="935.51,-79.39 928.87,-81.97 933.48,-79.28 929.02,-79.05 929.02,-79.05 929.02,-79.05 933.48,-79.28 929.17,-76.13 935.51,-79.39"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="779.64" y="-93.3" font-family="Arial" font-size="12.00" fill="#294866">vincula</text>
+<text xml:space="preserve" text-anchor="middle" x="779.64" y="-78.9" font-family="Arial" font-size="12.00" fill="#294866">0..1 : 0..1</text>
+</g>
+<!-- equipment&#45;&gt;maintenance_orders -->
+<g id="edge10" class="edge">
+<title>equipment&#45;&gt;maintenance_orders</title>
+<g id="a_edge10"><a xlink:title="maintenance_orders.equipment_id">
+<path fill="none" stroke="#6c8298" d="M845.92,-278.4C852.95,-271.01 857.61,-266.1 857.61,-266.1 857.61,-266.1 896.2,-218.6 934.05,-172"/>
+<polygon fill="#6c8298" stroke="#6c8298" points="938.13,-166.98 936.3,-173.87 936.85,-168.56 934.03,-172.02 934.03,-172.02 934.03,-172.02 936.85,-168.56 931.76,-170.18 938.13,-166.98"/>
+</a>
+</g>
+<text xml:space="preserve" text-anchor="middle" x="896.96" y="-257.54" font-family="Arial" font-size="12.00" fill="#294866">recibe</text>
+<text xml:space="preserve" text-anchor="middle" x="896.96" y="-243.14" font-family="Arial" font-size="12.00" fill="#294866">1 : 0..N</text>
+</g>
+<!-- roles -->
+<g id="node1" class="node">
+<title>roles</title>
+<polygon fill="white" stroke="none" points="0,-561.8 0,-670.4 80.47,-670.4 80.47,-561.8 0,-561.8"/>
+<polygon fill="#003061" stroke="none" points="1,-620.4 1,-669.4 79.47,-669.4 79.47,-620.4 1,-620.4"/>
+<text xml:space="preserve" text-anchor="start" x="17.09" y="-645.1" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Roles</text>
+<text xml:space="preserve" text-anchor="start" x="27.23" y="-632.6" font-family="Arial" font-size="12.00" fill="#dde9f4">roles</text>
+<text xml:space="preserve" text-anchor="start" x="7" y="-600.4" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="54.79" y="-600.4" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="7" y="-571.6" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="54.02" y="-571.6" font-family="Arial" font-size="14.00" fill="#007777">UK</text>
+<polygon fill="none" stroke="#cad7e3" points="0,-561.8 0,-670.4 80.47,-670.4 80.47,-561.8 0,-561.8"/>
+</g>
+<!-- users -->
+<g id="node2" class="node">
+<title>users</title>
+<polygon fill="white" stroke="none" points="195.57,-547.4 195.57,-684.8 290.31,-684.8 290.31,-547.4 195.57,-547.4"/>
+<polygon fill="#003061" stroke="none" points="196.57,-634.8 196.57,-683.8 289.31,-683.8 289.31,-634.8 196.57,-634.8"/>
+<text xml:space="preserve" text-anchor="start" x="206.57" y="-659.5" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Usuarios</text>
+<text xml:space="preserve" text-anchor="start" x="228.27" y="-647" font-family="Arial" font-size="12.00" fill="#dde9f4">users</text>
+<text xml:space="preserve" text-anchor="start" x="202.57" y="-614.8" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="264.64" y="-614.8" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="202.57" y="-586" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="278.65" y="-586" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<text xml:space="preserve" text-anchor="start" x="202.57" y="-557.2" font-family="Arial" font-size="14.00">email</text>
+<text xml:space="preserve" text-anchor="start" x="263.87" y="-557.2" font-family="Arial" font-size="14.00" fill="#007777">UK</text>
+<polygon fill="none" stroke="#cad7e3" points="195.57,-547.4 195.57,-684.8 290.31,-684.8 290.31,-547.4 195.57,-547.4"/>
+</g>
+<!-- ticket_categories -->
+<g id="node3" class="node">
+<title>ticket_categories</title>
+<polygon fill="white" stroke="none" points="186.92,-413.8 186.92,-522.4 298.96,-522.4 298.96,-413.8 186.92,-413.8"/>
+<polygon fill="#003061" stroke="none" points="187.92,-472.4 187.92,-521.4 297.96,-521.4 297.96,-472.4 187.92,-472.4"/>
+<text xml:space="preserve" text-anchor="start" x="199.01" y="-497.1" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Categorías</text>
+<text xml:space="preserve" text-anchor="start" x="197.92" y="-484.6" font-family="Arial" font-size="12.00" fill="#dde9f4">ticket_categories</text>
+<text xml:space="preserve" text-anchor="start" x="193.92" y="-452.4" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="273.29" y="-452.4" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="193.92" y="-423.6" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="287.3" y="-423.6" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="186.92,-413.8 186.92,-522.4 298.96,-522.4 298.96,-413.8 186.92,-413.8"/>
+</g>
+<!-- ticket_statuses -->
+<g id="node4" class="node">
+<title>ticket_statuses</title>
+<polygon fill="white" stroke="none" points="192.25,-279.8 192.25,-388.4 293.63,-388.4 293.63,-279.8 192.25,-279.8"/>
+<polygon fill="#003061" stroke="none" points="193.25,-338.4 193.25,-387.4 292.63,-387.4 292.63,-338.4 193.25,-338.4"/>
+<text xml:space="preserve" text-anchor="start" x="209.87" y="-363.1" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Estados</text>
+<text xml:space="preserve" text-anchor="start" x="203.25" y="-350.6" font-family="Arial" font-size="12.00" fill="#dde9f4">ticket_statuses</text>
+<text xml:space="preserve" text-anchor="start" x="199.25" y="-318.4" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="267.95" y="-318.4" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="199.25" y="-289.6" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="267.18" y="-289.6" font-family="Arial" font-size="14.00" fill="#007777">UK</text>
+<polygon fill="none" stroke="#cad7e3" points="192.25,-279.8 192.25,-388.4 293.63,-388.4 293.63,-279.8 192.25,-279.8"/>
+</g>
+<!-- ticket_priorities -->
+<g id="node5" class="node">
+<title>ticket_priorities</title>
+<polygon fill="white" stroke="none" points="185.17,-145.8 185.17,-254.4 300.71,-254.4 300.71,-145.8 185.17,-145.8"/>
+<polygon fill="#003061" stroke="none" points="186.17,-204.4 186.17,-253.4 299.71,-253.4 299.71,-204.4 186.17,-204.4"/>
+<text xml:space="preserve" text-anchor="start" x="196.17" y="-229.1" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Prioridades</text>
+<text xml:space="preserve" text-anchor="start" x="202.93" y="-216.6" font-family="Arial" font-size="12.00" fill="#dde9f4">ticket_priorities</text>
+<text xml:space="preserve" text-anchor="start" x="192.17" y="-184.4" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="275.03" y="-184.4" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="192.17" y="-155.6" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="274.26" y="-155.6" font-family="Arial" font-size="14.00" fill="#007777">UK</text>
+<polygon fill="none" stroke="#cad7e3" points="185.17,-145.8 185.17,-254.4 300.71,-254.4 300.71,-145.8 185.17,-145.8"/>
+</g>
+<!-- tickets -->
+<g id="node6" class="node">
+<title>tickets</title>
+<polygon fill="white" stroke="none" points="392.73,-370.6 392.73,-565.6 564.26,-565.6 564.26,-370.6 392.73,-370.6"/>
+<polygon fill="#007777" stroke="none" points="393.73,-515.6 393.73,-564.6 563.26,-564.6 563.26,-515.6 393.73,-515.6"/>
+<text xml:space="preserve" text-anchor="start" x="449.2" y="-540.3" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Tickets</text>
+<text xml:space="preserve" text-anchor="start" x="461.49" y="-527.8" font-family="Arial" font-size="12.00" fill="#dde9f4">tickets</text>
+<text xml:space="preserve" text-anchor="start" x="399.73" y="-495.6" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="538.59" y="-495.6" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="399.73" y="-466.8" font-family="Arial" font-size="14.00">number</text>
+<text xml:space="preserve" text-anchor="start" x="537.81" y="-466.8" font-family="Arial" font-size="14.00" fill="#007777">UK</text>
+<text xml:space="preserve" text-anchor="start" x="399.73" y="-438" font-family="Arial" font-size="14.00">title</text>
+<text xml:space="preserve" text-anchor="start" x="552.6" y="-438" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<text xml:space="preserve" text-anchor="start" x="399.73" y="-409.2" font-family="Arial" font-size="14.00">requester_id</text>
+<text xml:space="preserve" text-anchor="start" x="539.37" y="-409.2" font-family="Arial" font-size="14.00" fill="#007777">FK</text>
+<text xml:space="preserve" text-anchor="start" x="399.73" y="-380.4" font-family="Arial" font-size="14.00">current_assignee_id</text>
+<text xml:space="preserve" text-anchor="start" x="539.37" y="-380.4" font-family="Arial" font-size="14.00" fill="#007777">FK</text>
+<polygon fill="none" stroke="#cad7e3" points="392.73,-370.6 392.73,-565.6 564.26,-565.6 564.26,-370.6 392.73,-370.6"/>
+</g>
+<!-- ticket_comments -->
+<g id="node7" class="node">
+<title>ticket_comments</title>
+<polygon fill="white" stroke="none" points="716.69,-764.4 716.69,-901.8 842.6,-901.8 842.6,-764.4 716.69,-764.4"/>
+<polygon fill="#003061" stroke="none" points="717.69,-851.8 717.69,-900.8 841.6,-900.8 841.6,-851.8 717.69,-851.8"/>
+<text xml:space="preserve" text-anchor="start" x="727.69" y="-876.5" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Comentarios</text>
+<text xml:space="preserve" text-anchor="start" x="734.63" y="-864" font-family="Arial" font-size="12.00" fill="#dde9f4">ticket_comments</text>
+<text xml:space="preserve" text-anchor="start" x="723.69" y="-831.8" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="816.92" y="-831.8" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="723.69" y="-803" font-family="Arial" font-size="14.00">ticket_id</text>
+<text xml:space="preserve" text-anchor="start" x="817.71" y="-803" font-family="Arial" font-size="14.00" fill="#007777">FK</text>
+<text xml:space="preserve" text-anchor="start" x="723.69" y="-774.2" font-family="Arial" font-size="14.00">body</text>
+<text xml:space="preserve" text-anchor="start" x="830.93" y="-774.2" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="716.69,-764.4 716.69,-901.8 842.6,-901.8 842.6,-764.4 716.69,-764.4"/>
+</g>
+<!-- ticket_approvals -->
+<g id="node8" class="node">
+<title>ticket_approvals</title>
+<polygon fill="white" stroke="none" points="711.96,-602.4 711.96,-739.8 847.32,-739.8 847.32,-602.4 711.96,-602.4"/>
+<polygon fill="#003061" stroke="none" points="712.96,-689.8 712.96,-738.8 846.32,-738.8 846.32,-689.8 712.96,-689.8"/>
+<text xml:space="preserve" text-anchor="start" x="722.96" y="-714.5" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Aprobaciones</text>
+<text xml:space="preserve" text-anchor="start" x="736.28" y="-702" font-family="Arial" font-size="12.00" fill="#dde9f4">ticket_approvals</text>
+<text xml:space="preserve" text-anchor="start" x="718.96" y="-669.8" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="821.64" y="-669.8" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="718.96" y="-641" font-family="Arial" font-size="14.00">ticket_id</text>
+<text xml:space="preserve" text-anchor="start" x="822.43" y="-641" font-family="Arial" font-size="14.00" fill="#007777">FK</text>
+<text xml:space="preserve" text-anchor="start" x="718.96" y="-612.2" font-family="Arial" font-size="14.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="835.66" y="-612.2" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="711.96,-602.4 711.96,-739.8 847.32,-739.8 847.32,-602.4 711.96,-602.4"/>
+</g>
+<!-- development_requests -->
+<g id="node9" class="node">
+<title>development_requests</title>
+<polygon fill="white" stroke="none" points="701.67,-440.4 701.67,-577.8 857.61,-577.8 857.61,-440.4 701.67,-440.4"/>
+<polygon fill="#003061" stroke="none" points="702.67,-527.8 702.67,-576.8 856.61,-576.8 856.61,-527.8 702.67,-527.8"/>
+<text xml:space="preserve" text-anchor="start" x="737.6" y="-552.5" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Desarrollo</text>
+<text xml:space="preserve" text-anchor="start" x="718.94" y="-540" font-family="Arial" font-size="12.00" fill="#dde9f4">development_requests</text>
+<text xml:space="preserve" text-anchor="start" x="708.67" y="-507.8" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="831.94" y="-507.8" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="708.67" y="-479" font-family="Arial" font-size="14.00">ticket_id</text>
+<text xml:space="preserve" text-anchor="start" x="805.5" y="-479" font-family="Arial" font-size="14.00" fill="#007777">FK, UK</text>
+<text xml:space="preserve" text-anchor="start" x="708.67" y="-450.2" font-family="Arial" font-size="14.00">project_name</text>
+<text xml:space="preserve" text-anchor="start" x="845.95" y="-450.2" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="701.67,-440.4 701.67,-577.8 857.61,-577.8 857.61,-440.4 701.67,-440.4"/>
+</g>
+<!-- equipment -->
+<g id="node10" class="node">
+<title>equipment</title>
+<polygon fill="white" stroke="none" points="709.44,-278.4 709.44,-415.8 849.84,-415.8 849.84,-278.4 709.44,-278.4"/>
+<polygon fill="#003061" stroke="none" points="710.44,-365.8 710.44,-414.8 848.84,-414.8 848.84,-365.8 710.44,-365.8"/>
+<text xml:space="preserve" text-anchor="start" x="746.11" y="-390.5" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Equipos</text>
+<text xml:space="preserve" text-anchor="start" x="751.62" y="-378" font-family="Arial" font-size="12.00" fill="#dde9f4">equipment</text>
+<text xml:space="preserve" text-anchor="start" x="716.44" y="-345.8" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="824.17" y="-345.8" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="716.44" y="-317" font-family="Arial" font-size="14.00">inventory_code</text>
+<text xml:space="preserve" text-anchor="start" x="823.39" y="-317" font-family="Arial" font-size="14.00" fill="#007777">UK</text>
+<text xml:space="preserve" text-anchor="start" x="716.44" y="-288.2" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="838.18" y="-288.2" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="709.44,-278.4 709.44,-415.8 849.84,-415.8 849.84,-278.4 709.44,-278.4"/>
+</g>
+<!-- supplies -->
+<g id="node11" class="node">
+<title>supplies</title>
+<polygon fill="white" stroke="none" points="712.56,-116.4 712.56,-253.8 846.73,-253.8 846.73,-116.4 712.56,-116.4"/>
+<polygon fill="#003061" stroke="none" points="713.56,-203.8 713.56,-252.8 845.73,-252.8 845.73,-203.8 713.56,-203.8"/>
+<text xml:space="preserve" text-anchor="start" x="730.52" y="-228.5" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Suministros</text>
+<text xml:space="preserve" text-anchor="start" x="757.63" y="-216" font-family="Arial" font-size="12.00" fill="#dde9f4">supplies</text>
+<text xml:space="preserve" text-anchor="start" x="719.56" y="-183.8" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="821.05" y="-183.8" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="719.56" y="-155" font-family="Arial" font-size="14.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="835.06" y="-155" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<text xml:space="preserve" text-anchor="start" x="719.56" y="-126.2" font-family="Arial" font-size="14.00">stock_quantity</text>
+<text xml:space="preserve" text-anchor="start" x="835.06" y="-126.2" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="712.56,-116.4 712.56,-253.8 846.73,-253.8 846.73,-116.4 712.56,-116.4"/>
+</g>
+<!-- maintenance_orders -->
+<g id="node12" class="node">
+<title>maintenance_orders</title>
+<polygon fill="white" stroke="none" points="936.3,0 936.3,-166.2 1078.24,-166.2 1078.24,0 936.3,0"/>
+<polygon fill="#003061" stroke="none" points="937.3,-116.2 937.3,-165.2 1077.24,-165.2 1077.24,-116.2 937.3,-116.2"/>
+<text xml:space="preserve" text-anchor="start" x="947.3" y="-140.9" font-family="Arial" font-weight="bold" font-size="17.00" fill="white">Mantenimiento</text>
+<text xml:space="preserve" text-anchor="start" x="952.57" y="-128.4" font-family="Arial" font-size="12.00" fill="#dde9f4">maintenance_orders</text>
+<text xml:space="preserve" text-anchor="start" x="943.3" y="-96.2" font-family="Arial" font-size="14.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="1052.57" y="-96.2" font-family="Arial" font-size="14.00" fill="#007777">PK</text>
+<text xml:space="preserve" text-anchor="start" x="943.3" y="-67.4" font-family="Arial" font-size="14.00">equipment_id</text>
+<text xml:space="preserve" text-anchor="start" x="1053.35" y="-67.4" font-family="Arial" font-size="14.00" fill="#007777">FK</text>
+<text xml:space="preserve" text-anchor="start" x="943.3" y="-38.6" font-family="Arial" font-size="14.00">scheduled_for</text>
+<text xml:space="preserve" text-anchor="start" x="1066.58" y="-38.6" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<text xml:space="preserve" text-anchor="start" x="943.3" y="-9.8" font-family="Arial" font-size="14.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="1066.58" y="-9.8" font-family="Arial" font-size="14.00" fill="#007777">&#45;</text>
+<polygon fill="none" stroke="#cad7e3" points="936.3,0 936.3,-166.2 1078.24,-166.2 1078.24,0 936.3,0"/>
+</g>
+</g>
+</svg>

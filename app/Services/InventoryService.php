@@ -199,6 +199,32 @@ class InventoryService
         ]);
     }
 
+    public function returnConsumedForTicket(Ticket $ticket, User $actor, string $reason): int
+    {
+        return DB::transaction(function () use ($ticket, $actor, $reason): int {
+            $usages = TicketSupplyUsage::where('ticket_id', $ticket->id)->where('status', 'consumed')
+                ->orderBy('supply_id')->lockForUpdate()->get();
+            foreach ($usages as $usage) {
+                $supply = Supply::whereKey($usage->supply_id)->lockForUpdate()->firstOrFail();
+                $quantity = (float) $usage->quantity_consumed;
+                $before = (float) $supply->stock_quantity;
+                $after = round($before + $quantity, 2);
+                if ($quantity <= 0 || $after > 9999999999.99) {
+                    throw ValidationException::withMessages(['stock_action' => 'No se puede devolver la cantidad registrada de '.$supply->name.'.']);
+                }
+                $supply->update(['stock_quantity' => $after, 'updated_by_id' => $actor->id]);
+                $supply->movements()->create(['ticket_id' => $ticket->id, 'ticket_supply_usage_id' => $usage->id,
+                    'movement_type' => 'return', 'quantity_delta' => $quantity,
+                    'balance_before' => $before, 'balance_after' => $after,
+                    'justification' => 'Devolución al reabrir '.$ticket->number.': '.$reason,
+                    'responsible_id' => $actor->id, 'authorized_by_id' => $actor->id]);
+                $usage->update(['status' => 'returned', 'released_by_id' => $actor->id, 'released_at' => now()]);
+            }
+
+            return $usages->count();
+        });
+    }
+
     public function clean(?string $value): ?string
     {
         return $value === null ? null : trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value));

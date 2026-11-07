@@ -28,6 +28,10 @@ class TicketCollaborationController extends Controller
 
     public function comment(Request $request, Ticket $ticket): RedirectResponse
     {
+        $request->validate(['is_internal' => ['nullable', 'boolean']]);
+        if ($request->boolean('is_internal')) {
+            return $this->internalNote($request, $ticket);
+        }
         $this->authorize('comment', $ticket);
         $validated = $request->validate($this->messageRules(), $this->fileMessages());
 
@@ -156,7 +160,11 @@ class TicketCollaborationController extends Controller
         ], $this->fileMessages());
 
         DB::transaction(function () use ($request, $ticket, $validated): void {
+            $ticket = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('solve', $ticket);
             $from = ['status' => $ticket->status?->name, 'solution' => $ticket->solution];
+            $editing = trim((string) $ticket->solution) !== '';
+            $resubmitting = $ticket->solutionNeedsUpdate();
             $ticket->update([
                 'solution' => $this->clean($validated['solution']),
                 'solution_by_id' => $request->user()->id,
@@ -167,11 +175,31 @@ class TicketCollaborationController extends Controller
             if ($request->hasFile('attachments')) {
                 $this->attachments->storeMany($ticket, $request->user(), $request->file('attachments'), 'solution');
             }
-            $this->history->record($ticket, $request->user(), 'solution_registered', 'Solución documentada y remitida al solicitante.',
+            $this->history->record($ticket, $request->user(), $editing && ! $resubmitting ? 'solution_updated' : 'solution_registered', $resubmitting ? 'Nueva revisión de la solución registrada después de la reapertura.' : ($editing ? 'Solución actualizada y remitida al solicitante.' : 'Solución documentada y remitida al solicitante.'),
                 $from, ['status' => 'Solucionado', 'solution' => $ticket->solution], $request);
         });
 
         return back()->with('success', 'Solución enviada al solicitante para su aceptación.');
+    }
+
+    public function deleteSolution(Request $request, Ticket $ticket): RedirectResponse
+    {
+        $this->authorize('deleteSolution', $ticket);
+        DB::transaction(function () use ($request, $ticket): void {
+            $ticket = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('deleteSolution', $ticket);
+            $previous = ['solution' => $ticket->solution, 'solution_by_id' => $ticket->solution_by_id,
+                'solved_at' => $ticket->solved_at?->toIso8601String(), 'status' => $ticket->status?->name];
+            $ticket->update(['solution' => null, 'solution_by_id' => null, 'solved_at' => null,
+                'ticket_status_id' => $this->workflow->status('en-proceso')->id,
+                'last_activity_at' => now(), 'lock_version' => $ticket->lock_version + 1]);
+            $this->history->record($ticket, $request->user(), 'solution_deleted',
+                'Solución retirada; el ticket vuelve a atención. Se conservan las evidencias y los movimientos de inventario.',
+                $previous, ['status' => 'En proceso'], $request);
+        });
+
+        return redirect()->to(route('tickets.show', $ticket).'#ticket-resolution')
+            ->with('edit_solution', true)->with('success', 'Solución eliminada del ticket. Su versión anterior permanece en el historial.');
     }
 
     public function review(Request $request, Ticket $ticket): RedirectResponse
@@ -181,13 +209,15 @@ class TicketCollaborationController extends Controller
             'decision' => ['required', Rule::in(['accepted', 'rejected'])],
             'rating' => ['nullable', 'required_if:decision,accepted', 'integer', 'between:1,5'],
             'comment' => ['nullable', 'string', 'max:2000'],
-            'confirmation' => ['nullable', 'required_if:decision,accepted', 'accepted'],
+            'confirmation' => ['exclude_unless:decision,accepted', 'required', 'accepted'],
         ]);
         if ($validated['decision'] === 'rejected' && mb_strlen(trim((string) ($validated['comment'] ?? ''))) < 10) {
             throw ValidationException::withMessages(['comment' => 'Explica por qué la solución no es satisfactoria (mínimo 10 caracteres).']);
         }
 
         DB::transaction(function () use ($request, $ticket, $validated): void {
+            $ticket = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('review', $ticket);
             $accepted = $validated['decision'] === 'accepted';
             if ($accepted) {
                 $this->inventory->consumeForTicket($ticket, $request->user());

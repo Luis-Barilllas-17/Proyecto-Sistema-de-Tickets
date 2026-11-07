@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
+use App\Services\TicketAttachmentPreviewService;
 use App\Services\TicketHistoryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +18,39 @@ class TicketAttachmentController extends Controller
 
     public function download(Request $request, Ticket $ticket, TicketAttachment $attachment): BinaryFileResponse
     {
+        $this->authorizeAttachment($request, $ticket, $attachment);
+
+        return response()->download(
+            Storage::disk($attachment->disk)->path($attachment->path),
+            $attachment->original_name,
+            ['Content-Type' => 'application/octet-stream', 'X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store'],
+        )->setPrivate();
+    }
+
+    public function preview(Request $request, Ticket $ticket, TicketAttachment $attachment, TicketAttachmentPreviewService $previews): JsonResponse
+    {
+        $this->authorizeAttachment($request, $ticket, $attachment);
+        $data = $previews->preview($attachment);
+        if (in_array($data['type'], ['image', 'pdf'], true)) {
+            $data['url'] = route('tickets.attachments.inline', [$ticket, $attachment]);
+        }
+
+        return response()->json($data)->header('Cache-Control', 'private, no-store');
+    }
+
+    public function inline(Request $request, Ticket $ticket, TicketAttachment $attachment, TicketAttachmentPreviewService $previews): BinaryFileResponse
+    {
+        $this->authorizeAttachment($request, $ticket, $attachment);
+        $type = $previews->inlineType($attachment);
+        abort_unless($type, 415);
+
+        return response()->file(Storage::disk($attachment->disk)->path($attachment->path), [
+            'Content-Type' => $type, 'Cache-Control' => 'private, no-store',
+        ])->setPrivate();
+    }
+
+    private function authorizeAttachment(Request $request, Ticket $ticket, TicketAttachment $attachment): void
+    {
         $this->ensureBelongsToTicket($ticket, $attachment);
         $this->authorize('view', $ticket);
         if ($attachment->is_internal && ! ($request->user()->hasPermission('tickets.internal_note') || $request->user()->hasPermission('tickets.view_all'))) {
@@ -25,11 +60,6 @@ class TicketAttachmentController extends Controller
             abort(404);
         }
 
-        return response()->download(
-            Storage::disk($attachment->disk)->path($attachment->path),
-            $attachment->original_name,
-            ['Content-Type' => 'application/octet-stream', 'X-Content-Type-Options' => 'nosniff'],
-        );
     }
 
     public function destroy(Request $request, Ticket $ticket, TicketAttachment $attachment): RedirectResponse

@@ -164,7 +164,7 @@
                                 <a href="{{ route('operations.index') }}" class="nav-link {{ request()->routeIs('operations.*') ? 'is-active' : '' }}"><span class="nav-link__icon" aria-hidden="true">27</span><span>Bandeja de IT</span></a>
                             @endif
                             @if(auth()->user()->hasPermission('notifications.view'))
-                                <a href="{{ route('notifications.index') }}" class="nav-link {{ request()->routeIs('notifications.*') ? 'is-active' : '' }}"><span class="nav-link__icon" aria-hidden="true">28</span><span>Notificaciones</span>@if(auth()->user()->unreadNotifications()->count())<b class="nav-count">{{ min(99,auth()->user()->unreadNotifications()->count()) }}</b>@endif</a>
+                                <a href="{{ route('notifications.index') }}" class="nav-link {{ request()->routeIs('notifications.*') ? 'is-active' : '' }}"><span class="nav-link__icon" aria-hidden="true"><x-icons.notification-bell /></span><span>Notificaciones</span>@if(auth()->user()->unreadNotifications()->count())<b class="nav-count">{{ min(99,auth()->user()->unreadNotifications()->count()) }}</b>@endif</a>
                             @endif
                             @if(auth()->user()->hasPermission('reports.view'))
                                 <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'is-active' : '' }}"><span class="nav-link__icon" aria-hidden="true">29</span><span>Indicadores y reportes</span></a>
@@ -230,14 +230,6 @@
                 @endif
             </nav>
 
-            <div class="sidebar__security">
-                <span class="security-pulse" aria-hidden="true"></span>
-                <div>
-                    <strong>Sesión protegida</strong>
-                    <span>Cierre automático en {{ config('security.session_timeout_minutes') }} min</span>
-                </div>
-            </div>
-
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="sidebar__logout" data-logout-form data-reset-page-loader>
                 @csrf
                 <button type="submit" form="logout-form" formmethod="post" formaction="{{ route('logout') }}" data-logout-submit>
@@ -262,7 +254,7 @@
 
                 <div class="topbar__user">
                     @if(auth()->user()->hasPermission('notifications.view'))
-                        <a href="{{ route('notifications.index',['scope'=>'unread']) }}" class="topbar-notifications" aria-label="Notificaciones sin leer"><span>●</span>@if(auth()->user()->unreadNotifications()->count())<b>{{ min(99,auth()->user()->unreadNotifications()->count()) }}</b>@endif</a>
+                        <a href="{{ route('notifications.index',['scope'=>'unread']) }}" class="topbar-notifications" aria-label="Notificaciones sin leer"><x-icons.notification-bell />@if(auth()->user()->unreadNotifications()->count())<b>{{ min(99,auth()->user()->unreadNotifications()->count()) }}</b>@endif</a>
                     @endif
                     <div class="topbar__date">
                         <span>{{ now()->locale('es')->isoFormat('dddd') }}</span>
@@ -298,5 +290,6 @@
             </main>
         </div>
     </div>
+    <x-confirm-dialog />
 </body>
 </html>

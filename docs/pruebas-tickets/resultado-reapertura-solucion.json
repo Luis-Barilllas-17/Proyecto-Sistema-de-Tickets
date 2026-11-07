@@ -1,0 +1,162 @@
+{
+  "ticket": 23,
+  "date": "2026-11-07T03:26:26.365Z",
+  "checks": [
+    "Visor y confirmación centrados en cinco tamaños; botón de reasignación; cancelar/eliminar solución sin perder adjuntos ni reservas.",
+    "Reabrir devuelve a atención y enfoca el editor; material devuelto se reserva expresamente; solución actualizada permite un nuevo cierre y consume solo una unidad; mantener consumidos no duplica movimientos."
+  ],
+  "centering": [
+    {
+      "name": "adjunto",
+      "width": 1050,
+      "height": 440.84375,
+      "left": 195,
+      "top": 279.578125,
+      "viewport": 1440,
+      "client": 1440,
+      "viewportHeight": 1000
+    },
+    {
+      "name": "adjunto",
+      "width": 1050,
+      "height": 440.84375,
+      "left": 115,
+      "top": 139.578125,
+      "viewport": 1280,
+      "client": 1280,
+      "viewportHeight": 720
+    },
+    {
+      "name": "adjunto",
+      "width": 736,
+      "height": 460.03125,
+      "left": 16,
+      "top": 281.984375,
+      "viewport": 768,
+      "client": 768,
+      "viewportHeight": 1024
+    },
+    {
+      "name": "adjunto",
+      "width": 374,
+      "height": 455.21875,
+      "left": 8,
+      "top": 194.390625,
+      "viewport": 390,
+      "client": 390,
+      "viewportHeight": 844
+    },
+    {
+      "name": "adjunto",
+      "width": 304,
+      "height": 542.78125,
+      "left": 8,
+      "top": 12.609375,
+      "viewport": 320,
+      "client": 320,
+      "viewportHeight": 568
+    },
+    {
+      "name": "eliminar",
+      "width": 500,
+      "height": 235.640625,
+      "left": 470,
+      "top": 382.171875,
+      "viewport": 1440,
+      "client": 1440,
+      "viewportHeight": 1000
+    },
+    {
+      "name": "eliminar",
+      "width": 500,
+      "height": 235.640625,
+      "left": 390,
+      "top": 242.171875,
+      "viewport": 1280,
+      "client": 1280,
+      "viewportHeight": 720
+    },
+    {
+      "name": "eliminar",
+      "width": 500,
+      "height": 235.640625,
+      "left": 134,
+      "top": 394.171875,
+      "viewport": 768,
+      "client": 768,
+      "viewportHeight": 1024
+    },
+    {
+      "name": "eliminar",
+      "width": 352,
+      "height": 257.65625,
+      "left": 19,
+      "top": 293.171875,
+      "viewport": 390,
+      "client": 390,
+      "viewportHeight": 844
+    },
+    {
+      "name": "eliminar",
+      "width": 282,
+      "height": 279.671875,
+      "left": 19,
+      "top": 144.15625,
+      "viewport": 320,
+      "client": 320,
+      "viewportHeight": 568
+    },
+    {
+      "name": "reabrir",
+      "width": 500,
+      "height": 429.578125,
+      "left": 470,
+      "top": 285.203125,
+      "viewport": 1440,
+      "client": 1440,
+      "viewportHeight": 1000
+    },
+    {
+      "name": "reabrir",
+      "width": 500,
+      "height": 429.578125,
+      "left": 390,
+      "top": 145.203125,
+      "viewport": 1280,
+      "client": 1280,
+      "viewportHeight": 720
+    },
+    {
+      "name": "reabrir",
+      "width": 500,
+      "height": 429.578125,
+      "left": 134,
+      "top": 297.203125,
+      "viewport": 768,
+      "client": 768,
+      "viewportHeight": 1024
+    },
+    {
+      "name": "reabrir",
+      "width": 352,
+      "height": 463.90625,
+      "left": 19,
+      "top": 190.046875,
+      "viewport": 390,
+      "client": 390,
+      "viewportHeight": 844
+    },
+    {
+      "name": "reabrir",
+      "width": 282,
+      "height": 520.984375,
+      "left": 19,
+      "top": 23.5,
+      "viewport": 320,
+      "client": 320,
+      "viewportHeight": 568
+    }
+  ],
+  "errors": [],
+  "nativeDialogs": []
+}

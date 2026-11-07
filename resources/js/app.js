@@ -1,4 +1,8 @@
 import './bootstrap';
+import './search-picker';
+import './ticket-detail';
+import './confirmation-dialog';
+import '../css/ticket-detail.css';
 
 const pageLoader = document.querySelector('[data-page-loader]');
 
@@ -88,19 +92,55 @@ document.querySelectorAll('[data-password-toggle]').forEach((button) => {
     });
 });
 
-document.querySelectorAll('form[data-confirm]').forEach((form) => {
-    form.addEventListener('submit', (event) => {
-        if (!window.confirm(form.dataset.confirm)) {
-            event.preventDefault();
-        }
-    });
-});
-
 document.querySelectorAll('.section-tabs a').forEach((tab) => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.section-tabs a').forEach((item) => item.classList.remove('is-active'));
         tab.classList.add('is-active');
     });
+});
+
+document.querySelectorAll('[data-horizontal-scroll]').forEach((container) => {
+    const viewport = container.querySelector('[data-scroll-body]');
+    const top = container.querySelector('[data-scroll-top]');
+    const spacer = container.querySelector('[data-scroll-spacer]');
+    const controls = container.querySelector('[data-scroll-controls]');
+    const table = viewport?.querySelector('table');
+    const buttons = [...container.querySelectorAll('[data-scroll-direction]')];
+    if (!viewport || !top || !spacer || !controls || !table) return;
+
+    const updateButtons = () => {
+        const maximum = viewport.scrollWidth - viewport.clientWidth;
+        buttons.forEach((button) => {
+            button.disabled = Number(button.dataset.scrollDirection) < 0
+                ? viewport.scrollLeft <= 1 : viewport.scrollLeft >= maximum - 1;
+        });
+    };
+
+    const sync = (source, target) => {
+        if (Math.abs(source.scrollLeft - target.scrollLeft) > 1) target.scrollLeft = source.scrollLeft;
+        updateButtons();
+    };
+    const resize = () => {
+        controls.hidden = viewport.scrollWidth <= viewport.clientWidth + 1;
+        spacer.style.width = `${viewport.scrollWidth}px`;
+        top.scrollLeft = viewport.scrollLeft;
+        updateButtons();
+    };
+
+    viewport.addEventListener('scroll', () => sync(viewport, top), { passive: true });
+    top.addEventListener('scroll', () => sync(top, viewport), { passive: true });
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const distance = Math.max(180, viewport.clientWidth * 0.7) * Number(button.dataset.scrollDirection);
+            viewport.scrollBy({ left: distance, behavior: 'instant' });
+        });
+    });
+
+    const observer = new ResizeObserver(resize);
+    observer.observe(viewport);
+    observer.observe(table);
+    document.fonts?.ready.then(resize);
+    resize();
 });
 
 document.querySelectorAll('[data-auto-dismiss]').forEach((alert) => {
@@ -119,19 +159,32 @@ const filterDepartments = () => {
 
     const areaId = areaSelect.value;
     [...departmentSelect.options].forEach((option) => {
-        if (!option.dataset.area) return;
-        option.hidden = Boolean(areaId) && option.dataset.area !== areaId;
-        option.disabled = Boolean(areaId) && option.dataset.area !== areaId;
+        const matches = !option.dataset.area || (Boolean(areaId) && option.dataset.area === areaId);
+        option.hidden = !matches;
+        option.disabled = !matches;
     });
 
     const selected = departmentSelect.selectedOptions[0];
     if (selected?.disabled) departmentSelect.value = '';
+    departmentSelect.disabled = !areaId;
 };
 
 if (areaSelect && departmentSelect) {
     filterDepartments();
     areaSelect.addEventListener('change', filterDepartments);
 }
+
+document.addEventListener('search-picker:change', (event) => {
+    if (event.detail.name !== 'requester_id' || !event.detail.item) return;
+    const form = event.target.closest('[data-ticket-form]');
+    if (!form) return;
+    const area = form.querySelector('[data-area-select]');
+    const department = form.querySelector('[data-department-select]');
+    if (!area || !department) return;
+    area.value = event.detail.item.area_id || '';
+    department.value = event.detail.item.department_id || '';
+    filterDepartments();
+});
 
 document.querySelectorAll('[data-check-group]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -203,7 +256,10 @@ document.querySelectorAll('[data-file-input]').forEach((input) => {
         if (!list) return;
         list.replaceChildren(...[...input.files].map((file) => {
             const item = document.createElement('span');
-            item.textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MB`;
+            const size = file.size < 1024 ? `${file.size} bytes`
+                : file.size < 1024 * 1024 ? `${(file.size / 1024).toFixed(1)} KB`
+                    : `${(file.size / 1024 / 1024).toFixed(1)} MB`;
+            item.textContent = `${file.name} · ${size}`;
             return item;
         }));
     });
@@ -212,6 +268,7 @@ document.querySelectorAll('[data-file-input]').forEach((input) => {
 document.querySelectorAll('[data-assignment-form]').forEach((form) => {
     const area = form.querySelector('[data-it-area-select]');
     const group = form.querySelector('[data-it-group-select]');
+    const technician = form.querySelector('[data-technician-select]');
     if (!area || !group) return;
 
     const filterGroups = () => {
@@ -222,8 +279,19 @@ document.querySelectorAll('[data-assignment-form]').forEach((form) => {
             option.disabled = !matches;
         });
         if (group.selectedOptions[0]?.disabled) group.value = '';
+        if (technician) {
+            [...technician.options].forEach((option) => {
+                if (!option.value) return;
+                const memberships = JSON.parse(option.dataset.groups || '[]').map(String);
+                const matches = (!area.value || option.dataset.area === area.value) && (!group.value || memberships.includes(group.value));
+                option.hidden = !matches;
+                option.disabled = !matches;
+            });
+            if (technician.selectedOptions[0]?.disabled) technician.value = '';
+        }
     };
 
     filterGroups();
     area.addEventListener('change', filterGroups);
+    group.addEventListener('change', filterGroups);
 });

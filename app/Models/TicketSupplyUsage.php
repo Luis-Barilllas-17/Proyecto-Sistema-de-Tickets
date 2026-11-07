@@ -11,6 +11,7 @@ class TicketSupplyUsage extends Model
         'reserved' => 'Reservado',
         'consumed' => 'Consumido',
         'released' => 'Liberado',
+        'returned' => 'Devuelto al inventario',
     ];
 
     protected $fillable = [

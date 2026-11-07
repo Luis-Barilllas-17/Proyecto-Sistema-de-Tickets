@@ -10,10 +10,10 @@
     </div>
 
     <section class="people-metrics people-metrics--technical" aria-label="Resumen de la estructura técnica">
-        <article class="people-metric people-metric--navy"><span class="people-metric__mark" aria-hidden="true">01</span><div><small>Grupos activos</small><strong>{{ $metrics['active_groups'] }}</strong><span>Equipos disponibles</span></div></article>
-        <article class="people-metric people-metric--teal"><span class="people-metric__mark" aria-hidden="true">02</span><div><small>Personal técnico</small><strong>{{ $metrics['members'] }}</strong><span>Integrantes únicos</span></div></article>
-        <article class="people-metric people-metric--blue"><span class="people-metric__mark" aria-hidden="true">03</span><div><small>Áreas de IT</small><strong>{{ $metrics['areas'] }}</strong><span>Con grupos asignados</span></div></article>
-        <article class="people-metric people-metric--orange"><span class="people-metric__mark" aria-hidden="true">04</span><div><small>Especialidades</small><strong>{{ $metrics['specialties'] }}</strong><span>Competencias activas</span></div></article>
+        <article class="people-metric people-metric--navy"><span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="groups" /></span><div><small>Grupos activos</small><strong>{{ $metrics['active_groups'] }}</strong><span>Equipos disponibles</span></div></article>
+        <article class="people-metric people-metric--teal"><span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="users" /></span><div><small>Personal técnico</small><strong>{{ $metrics['members'] }}</strong><span>Integrantes únicos</span></div></article>
+        <article class="people-metric people-metric--blue"><span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="areas" /></span><div><small>Áreas de IT</small><strong>{{ $metrics['areas'] }}</strong><span>Con grupos asignados</span></div></article>
+        <article class="people-metric people-metric--orange"><span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="specialties" /></span><div><small>Especialidades</small><strong>{{ $metrics['specialties'] }}</strong><span>Competencias activas</span></div></article>
     </section>
 
     <section class="technical-groups-section" aria-labelledby="technical-groups-title">

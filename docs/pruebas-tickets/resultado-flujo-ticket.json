@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-07T02:51:04.409Z",
+  "ticket": 21,
+  "checks": [
+    "Sin calificación ni reapertura antes de solución; asignación manual a técnico, sin confundir solicitante ni grupo.",
+    "Insumos compactos sin desbordamientos en seis anchos; un solo editor público/privado; búsqueda de tickets y archivos antes de terceros.",
+    "Técnico acepta, registra y edita solución; solicitante no ve nota interna; califica solo tras solución; cierre bloquea formularios incluso del administrador.",
+    "Modal propio: cancelar conserva el cierre; devolver restituyó el material; segunda reserva/cierre y reapertura manteniendo consumidos; ningún diálogo nativo."
+  ],
+  "errors": [],
+  "nativeDialogs": []
+}

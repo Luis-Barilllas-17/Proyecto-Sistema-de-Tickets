@@ -36,7 +36,7 @@
         </div>
 
         <div class="table-wrap">
-            <table class="data-table">
+            <table class="data-table security-users-table">
                 <thead>
                     <tr>
                         <th>Usuario</th>

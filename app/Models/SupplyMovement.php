@@ -12,6 +12,7 @@ class SupplyMovement extends Model
         'exit' => 'Salida',
         'adjustment' => 'Ajuste',
         'consumption' => 'Consumo por ticket',
+        'return' => 'Devolución al reabrir ticket',
     ];
 
     protected $fillable = [

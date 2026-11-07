@@ -9,9 +9,14 @@ use App\Models\User;
 
 class TicketPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $user, string $ability, mixed $subject = null): ?bool
     {
-        return $user->isSuperAdmin() ? true : null;
+        // Administrator permissions never bypass the lifecycle of a closed ticket.
+        if ($subject instanceof Ticket && $subject->isTerminal() && ! in_array($ability, ['view', 'reopen'], true)) {
+            return false;
+        }
+
+        return null;
     }
 
     public function viewAny(User $user): bool
@@ -56,27 +61,29 @@ class TicketPolicy
     {
         $ownsEditableSource = $ticket->source === 'it_internal'
             ? $ticket->created_by_id === $user->id && $user->hasPermission('tickets.create_internal')
-            : $ticket->requester_id === $user->id;
+            : $ticket->requester_id === $user->id
+                || ($ticket->created_by_id === $user->id && $user->hasPermission('tickets.create_internal'));
 
-        return $ownsEditableSource
+        return ($user->isSuperAdmin() || $ownsEditableSource)
             && ($ticket->is_draft || $ticket->approval_status === 'changes_requested')
             && ! $ticket->isTerminal();
     }
 
     public function approve(User $user, Ticket $ticket): bool
     {
-        if (! $user->hasPermission('tickets.approve')) {
+        if (! $user->hasPermission('tickets.approve') || $ticket->is_draft || $ticket->isTerminal()) {
             return false;
         }
 
         $approval = $ticket->approvals()->where('status', 'pending')->first();
 
-        return $approval !== null && $this->isAuthorizedApprover($user, $approval);
+        return $approval !== null && ($user->isSuperAdmin() || $this->isAuthorizedApprover($user, $approval));
     }
 
     public function assign(User $user, Ticket $ticket): bool
     {
         return $user->hasPermission('tickets.assign') && $this->view($user, $ticket)
+            && ! $ticket->current_assignee_id && ! $ticket->current_it_group_id && ! $ticket->current_it_area_id
             && ! $ticket->is_draft && ! in_array($ticket->approval_status, ['pending', 'rejected', 'changes_requested'], true)
             && ! $ticket->isTerminal();
     }
@@ -84,6 +91,7 @@ class TicketPolicy
     public function transfer(User $user, Ticket $ticket): bool
     {
         return $user->hasPermission('tickets.transfer') && $this->view($user, $ticket)
+            && ($ticket->current_assignee_id || $ticket->current_it_group_id || $ticket->current_it_area_id)
             && ! $ticket->is_draft && ! in_array($ticket->approval_status, ['pending', 'rejected', 'changes_requested'], true)
             && ! $ticket->isTerminal();
     }
@@ -124,7 +132,12 @@ class TicketPolicy
 
     public function relate(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('tickets.relate') && $this->view($user, $ticket);
+        return $user->hasPermission('tickets.relate') && $this->view($user, $ticket) && ! $ticket->isTerminal();
+    }
+
+    public function deleteSolution(User $user, Ticket $ticket): bool
+    {
+        return $this->solve($user, $ticket) && trim((string) $ticket->solution) !== '';
     }
 
     public function escalate(User $user, Ticket $ticket): bool
@@ -150,17 +163,17 @@ class TicketPolicy
     public function review(User $user, Ticket $ticket): bool
     {
         return $user->hasPermission('tickets.review')
-            && $ticket->requester_id === $user->id
+            && ($ticket->requester_id === $user->id || $user->isSuperAdmin())
             && $ticket->source === 'requester'
-            && $ticket->status?->slug === 'solucionado';
+            && $ticket->status?->slug === 'solucionado'
+            && trim((string) $ticket->solution) !== '' && ! $ticket->solutionNeedsUpdate();
     }
 
     public function reopen(User $user, Ticket $ticket): bool
     {
         return $user->hasPermission('tickets.reopen')
-            && $ticket->requester_id === $user->id
-            && $ticket->source === 'requester'
-            && in_array($ticket->status?->slug, ['solucionado', 'cerrado'], true);
+            && (($ticket->requester_id === $user->id && $ticket->source === 'requester') || $user->hasPermission('tickets.view_all'))
+            && $ticket->status?->slug === 'cerrado';
     }
 
     public function cancel(User $user, Ticket $ticket): bool

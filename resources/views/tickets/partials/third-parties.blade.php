@@ -1,0 +1,12 @@
+@if($ticket->thirdPartyDependencies->isNotEmpty() || auth()->user()->can('manageThirdParty',$ticket))
+    <section class="panel ticket-side-card third-party-card">
+        <div class="panel__header"><div><span class="panel__eyebrow">Coordinación externa</span><h2>Dependencias con terceros</h2></div><span class="count-pill">{{ $ticket->thirdPartyDependencies->count() }}</span></div>
+        <div class="third-party-list">
+            @foreach($ticket->thirdPartyDependencies as $dependency)
+                <article class="is-{{ $dependency->status }}"><div><span>{{ $dependency->status==='pending'?'Pendiente':'Resuelta' }}</span><strong>{{ $dependency->provider }}</strong><small>{{ $dependency->reference ?: 'Sin referencia' }} · {{ $dependency->requested_at->format('d/m/Y H:i') }}</small><p>{{ $dependency->description }}</p>@if($dependency->resolution)<em>{{ $dependency->resolution }}</em>@endif</div>
+                @if($dependency->status==='pending')@can('manageThirdParty',$ticket)<details><summary>Resolver</summary><form method="POST" action="{{ route('tickets.third-parties.resolve',[$ticket,$dependency]) }}">@csrf @method('PATCH')<label class="sr-only" for="third-party-{{ $dependency->id }}-resolution">Resultado recibido del proveedor</label><textarea id="third-party-{{ $dependency->id }}-resolution" name="resolution" rows="3" required minlength="10" placeholder="Resultado recibido del proveedor"></textarea><button class="button button--primary button--small">Confirmar resolución</button></form></details>@endcan @endif</article>
+            @endforeach
+        </div>
+        @can('manageThirdParty',$ticket)<details class="ticket-card-form"><summary>＋ Registrar dependencia</summary><form method="POST" action="{{ route('tickets.third-parties.store',$ticket) }}">@csrf<div class="field"><label for="third-party-provider">Proveedor o tercero</label><input id="third-party-provider" name="provider" required maxlength="180"></div><div class="field"><label for="third-party-reference">Referencia</label><input id="third-party-reference" name="reference" maxlength="120"></div><div class="field"><label for="third-party-due-at">Fecha compromiso</label><input id="third-party-due-at" type="datetime-local" name="due_at"></div><div class="field"><label for="third-party-description">Gestión requerida</label><textarea id="third-party-description" name="description" rows="3" required minlength="10"></textarea></div><button class="button button--primary button--full">Registrar y pausar ticket</button></form></details>@endcan
+    </section>
+@endif

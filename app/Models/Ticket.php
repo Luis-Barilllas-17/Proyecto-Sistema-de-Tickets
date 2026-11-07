@@ -229,4 +229,10 @@ class Ticket extends Model
     {
         return in_array($this->status?->slug, ['cerrado', 'cancelado'], true);
     }
+
+    public function solutionNeedsUpdate(): bool
+    {
+        return trim((string) $this->solution) !== '' && $this->reopened_at !== null
+            && ($this->solved_at === null || $this->solved_at->lt($this->reopened_at));
+    }
 }

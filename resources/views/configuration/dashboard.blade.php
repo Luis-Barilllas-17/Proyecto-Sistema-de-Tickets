@@ -24,10 +24,10 @@
     </section>
 
     <section class="metric-grid metric-grid--module-three" aria-label="Indicadores de configuración">
-        <article class="metric-card metric-card--blue"><div class="metric-card__icon"><span>{{ $metrics['categories'] }}</span></div><div><span>Categorías activas</span><strong>{{ $metrics['categories'] }}</strong><small>Solicitudes, incidentes y desarrollo</small></div></article>
-        <article class="metric-card metric-card--teal"><div class="metric-card__icon"><span>{{ $metrics['forms'] }}</span></div><div><span>Formularios publicados</span><strong>{{ $metrics['forms'] }}</strong><small>Campos configurables por clasificación</small></div></article>
-        <article class="metric-card metric-card--yellow"><div class="metric-card__icon"><span>{{ $metrics['workflows'] }}</span></div><div><span>Flujos de aprobación</span><strong>{{ $metrics['workflows'] }}</strong><small>{{ $activeDelegations }} suplencias vigentes</small></div></article>
-        <article class="metric-card metric-card--orange"><div class="metric-card__icon"><span>{{ $slaCount }}</span></div><div><span>Objetivos SLA</span><strong>{{ $slaCount }}</strong><small>{{ $metrics['priorities'] }} prioridades configuradas</small></div></article>
+        <article class="metric-card metric-card--blue"><div class="metric-card__icon"><x-icons.metric name="categories" /></div><div><span>Categorías activas</span><strong>{{ $metrics['categories'] }}</strong><small>Solicitudes, incidentes y desarrollo</small></div></article>
+        <article class="metric-card metric-card--teal"><div class="metric-card__icon"><x-icons.metric name="forms" /></div><div><span>Formularios publicados</span><strong>{{ $metrics['forms'] }}</strong><small>Campos configurables por clasificación</small></div></article>
+        <article class="metric-card metric-card--yellow"><div class="metric-card__icon"><x-icons.metric name="approvals" /></div><div><span>Flujos de aprobación</span><strong>{{ $metrics['workflows'] }}</strong><small>{{ $activeDelegations }} suplencias vigentes</small></div></article>
+        <article class="metric-card metric-card--orange"><div class="metric-card__icon"><x-icons.metric name="sla" /></div><div><span>Objetivos SLA</span><strong>{{ $slaCount }}</strong><small>{{ $metrics['priorities'] }} prioridades configuradas</small></div></article>
     </section>
 
     <section class="module-navigation module-navigation--five" aria-label="Opciones de configuración">

@@ -25,19 +25,19 @@
 
     <section class="metric-grid metric-grid--module-two" aria-label="Indicadores de administración">
         <article class="metric-card metric-card--blue">
-            <div class="metric-card__icon"><span>{{ $metrics['users'] }}</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="users" /></div>
             <div><span>Usuarios registrados</span><strong>{{ $metrics['users'] }}</strong><small>{{ $metrics['active_users'] }} cuentas activas</small></div>
         </article>
         <article class="metric-card metric-card--teal">
-            <div class="metric-card__icon"><span>{{ $metrics['roles'] }}</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="roles" /></div>
             <div><span>Perfiles habilitados</span><strong>{{ $metrics['roles'] }}</strong><small>Permisos por sección y acción</small></div>
         </article>
         <article class="metric-card metric-card--yellow">
-            <div class="metric-card__icon"><span>{{ $metrics['areas'] }}</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="areas" /></div>
             <div><span>Áreas institucionales</span><strong>{{ $metrics['areas'] }}</strong><small>{{ $metrics['departments'] }} departamentos</small></div>
         </article>
         <article class="metric-card metric-card--orange">
-            <div class="metric-card__icon"><span>{{ $metrics['groups'] }}</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="groups" /></div>
             <div><span>Grupos técnicos</span><strong>{{ $metrics['groups'] }}</strong><small>Equipos internos de IT</small></div>
         </article>
     </section>

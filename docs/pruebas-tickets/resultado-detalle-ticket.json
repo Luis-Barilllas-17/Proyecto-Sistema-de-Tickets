@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-07T01:26:52.467Z",
+  "ticket": 20,
+  "profiles": [
+    "admin",
+    "tecnico",
+    "usuario"
+  ],
+  "checks": [
+    "Búsqueda por código, sin resultados, unidades enteras y formulario sin desbordamiento en seis anchos.",
+    "Modal XLSX, texto sin ejecutar HTML, imagen, PDF, formato no compatible, Escape, descarga opcional y móvil.",
+    "Técnico reserva 2 unidades y registra solución mediante los formularios reales.",
+    "Usuario: nota interna prohibida, adjunto público legible, estrellas por teclado, valor conservado ante error, aceptación obligatoria y consumo final."
+  ],
+  "errors": []
+}

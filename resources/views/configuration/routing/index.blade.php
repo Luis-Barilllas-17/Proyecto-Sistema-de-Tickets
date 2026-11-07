@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'Reglas de direccionamiento')
-@section('section-title', 'Direccionamiento automático')
+@section('section-title', 'Reglas de direccionamiento')
 
 @section('content')
     <div class="page-heading">
-        <div><span class="eyebrow">Asignación automática</span><h1>Reglas de direccionamiento</h1><p>Define qué área de IT, grupo técnico o responsable recibirá cada tipo de ticket.</p></div>
+        <div><span class="eyebrow">Contexto de atención</span><h1>Reglas de direccionamiento</h1><p>Conserva el contexto técnico para las aprobaciones. El técnico responsable se selecciona manualmente desde cada ticket.</p></div>
         <div class="page-heading__meta"><span class="security-pulse"></span><div><strong>{{ $rules->where('is_active', true)->count() }} reglas activas</strong><span>Se evalúan por clasificación y precedencia</span></div></div>
     </div>
 
@@ -25,7 +25,7 @@
                     <div class="field"><label for="routing-group">Grupo técnico</label><div class="select-shell"><select id="routing-group" name="it_group_id"><option value="">Sin grupo específico</option>@foreach($groups as $group)<option value="{{ $group->id }}" data-area="{{ $group->area_id }}" @selected((string)old('it_group_id', $editingRule?->it_group_id) === (string)$group->id)>{{ $group->name }} · {{ $group->area?->name }}</option>@endforeach</select></div></div>
                     <div class="field"><label for="routing-assignee">Responsable directo</label><div class="select-shell"><select id="routing-assignee" name="assignee_user_id"><option value="">Asignación al grupo</option>@foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected((string)old('assignee_user_id', $editingRule?->assignee_user_id) === (string)$technician->id)>{{ $technician->name }} · {{ $technician->primary_role_name }}</option>@endforeach</select></div></div>
                 </div></div>
-                <div class="form-submit-bar"><label class="switch-field switch-field--small"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" @checked((bool)old('is_active', $editingRule?->is_active ?? true))><span></span><div><strong>Regla activa</strong><small>Disponible para asignación automática.</small></div></label><div>@if($editingRule)<a href="{{ route('configuration.routing.index') }}" class="button button--ghost">Cancelar</a>@endif<button type="submit" class="button button--primary">{{ $editingRule ? 'Guardar regla' : 'Registrar regla' }}</button></div></div>
+                <div class="form-submit-bar"><label class="switch-field switch-field--small"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" @checked((bool)old('is_active', $editingRule?->is_active ?? true))><span></span><div><strong>Regla activa</strong><small>Disponible como contexto de direccionamiento.</small></div></label><div>@if($editingRule)<a href="{{ route('configuration.routing.index') }}" class="button button--ghost">Cancelar</a>@endif<button type="submit" class="button button--primary">{{ $editingRule ? 'Guardar regla' : 'Registrar regla' }}</button></div></div>
             </form>
         </section>
     @endif

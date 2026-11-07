@@ -1,0 +1,74 @@
+erDiagram
+    direction LR
+    roles {
+        integer id PK
+        varchar name UK
+    }
+    users {
+        integer id PK
+        varchar name
+        varchar email UK
+    }
+    ticket_categories {
+        integer id PK
+        varchar name
+    }
+    ticket_statuses {
+        integer id PK
+        varchar name UK
+    }
+    ticket_priorities {
+        integer id PK
+        varchar name UK
+    }
+    tickets {
+        integer id PK
+        varchar number UK
+        varchar title
+        integer requester_id FK
+        integer current_assignee_id FK
+    }
+    ticket_comments {
+        integer id PK
+        integer ticket_id FK
+        text body
+    }
+    ticket_approvals {
+        integer id PK
+        integer ticket_id FK
+        varchar status
+    }
+    development_requests {
+        integer id PK
+        integer ticket_id FK, UK
+        varchar project_name
+    }
+    equipment {
+        integer id PK
+        varchar inventory_code UK
+        varchar name
+    }
+    supplies {
+        integer id PK
+        varchar name
+        numeric stock_quantity
+    }
+    maintenance_orders {
+        integer id PK
+        integer equipment_id FK
+        date scheduled_for
+        varchar status
+    }
+    users ||..o{ tickets : "solicita"
+    users |o..o{ tickets : "atiende"
+    ticket_categories ||..o{ tickets : "clasifica"
+    ticket_statuses |o..o{ tickets : "estado"
+    ticket_priorities |o..o{ tickets : "prioridad"
+    tickets ||..o{ ticket_comments : "comentarios"
+    tickets ||..o{ ticket_approvals : "aprobaciones"
+    tickets ||..o| development_requests : "desarrollo"
+    tickets |o..o| maintenance_orders : "vincula"
+    equipment ||..o{ maintenance_orders : "recibe"
+    roles }o..o{ users : "role_user"
+    tickets }o..o{ equipment : "ticket_equipment_links"
+    tickets }o..o{ supplies : "ticket_supply_usages"

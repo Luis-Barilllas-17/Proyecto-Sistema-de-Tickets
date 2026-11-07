@@ -42,6 +42,7 @@ use App\Http\Controllers\TicketCollaborationController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketEscalationController;
 use App\Http\Controllers\TicketFormController;
+use App\Http\Controllers\TicketLookupController;
 use App\Http\Controllers\TicketSupplyUsageController;
 use App\Http\Controllers\TicketThirdPartyController;
 use App\Http\Controllers\UserManagementController;
@@ -168,6 +169,8 @@ Route::middleware(['auth', 'active', 'session.timeout'])->group(function (): voi
             Route::get('/', [TicketController::class, 'index'])->middleware('permission:tickets.view')->name('index');
             Route::get('/crear', [TicketController::class, 'create'])->middleware('permission:tickets.create')->name('create');
             Route::post('/', [TicketController::class, 'store'])->middleware('permission:tickets.create')->name('store');
+            Route::get('/buscar/solicitantes', [TicketLookupController::class, 'requesters'])->middleware('permission:tickets.create')->name('lookups.requesters');
+            Route::get('/buscar/equipos', [TicketLookupController::class, 'equipment'])->middleware('permission:tickets.create')->name('lookups.equipment');
 
             Route::get('/{ticket}', [TicketController::class, 'show'])->middleware('permission:tickets.view')->name('show');
             Route::get('/{ticket}/editar', [TicketController::class, 'edit'])->middleware('permission:tickets.create')->name('edit');
@@ -187,15 +190,20 @@ Route::middleware(['auth', 'active', 'session.timeout'])->group(function (): voi
             Route::post('/{ticket}/notas-internas', [TicketCollaborationController::class, 'internalNote'])->middleware('permission:tickets.internal_note')->name('notes.store');
             Route::post('/{ticket}/actividades', [TicketCollaborationController::class, 'activity'])->middleware('permission:tickets.activity')->name('activities.store');
             Route::post('/{ticket}/relaciones', [TicketCollaborationController::class, 'relate'])->middleware('permission:tickets.relate')->name('relations.store');
+            Route::get('/{ticket}/relaciones/buscar', [TicketController::class, 'relatedLookup'])->middleware('permission:tickets.relate')->name('lookups.related');
             Route::post('/{ticket}/solucion', [TicketCollaborationController::class, 'solve'])->middleware('permission:tickets.solve')->name('solution.store');
+            Route::delete('/{ticket}/solucion', [TicketCollaborationController::class, 'deleteSolution'])->middleware('permission:tickets.solve')->name('solution.destroy');
             Route::post('/{ticket}/revision', [TicketCollaborationController::class, 'review'])->middleware('permission:tickets.review')->name('review.store');
             Route::post('/{ticket}/escalamientos', [TicketEscalationController::class, 'store'])->middleware('permission:tickets.escalate')->name('escalations.store');
             Route::post('/{ticket}/terceros', [TicketThirdPartyController::class, 'store'])->middleware('permission:tickets.third_party')->name('third-parties.store');
             Route::patch('/{ticket}/terceros/{dependency}', [TicketThirdPartyController::class, 'resolve'])->middleware('permission:tickets.third_party')->name('third-parties.resolve');
 
             Route::get('/{ticket}/archivos/{attachment}', [TicketAttachmentController::class, 'download'])->name('attachments.download');
+            Route::get('/{ticket}/archivos/{attachment}/vista-previa', [TicketAttachmentController::class, 'preview'])->name('attachments.preview');
+            Route::get('/{ticket}/archivos/{attachment}/contenido', [TicketAttachmentController::class, 'inline'])->name('attachments.inline');
             Route::delete('/{ticket}/archivos/{attachment}', [TicketAttachmentController::class, 'destroy'])->name('attachments.destroy');
             Route::post('/{ticket}/insumos', [TicketSupplyUsageController::class, 'store'])->middleware('permission:inventory.consume')->name('supplies.store');
+            Route::get('/{ticket}/insumos/buscar', [TicketLookupController::class, 'supplies'])->middleware('permission:inventory.consume')->name('lookups.supplies');
             Route::delete('/{ticket}/insumos/{usage}', [TicketSupplyUsageController::class, 'destroy'])->middleware('permission:inventory.consume')->name('supplies.destroy');
         });
 

@@ -23,7 +23,7 @@
 
     <section class="metric-grid" aria-label="Indicadores de seguridad">
         <article class="metric-card metric-card--blue">
-            <div class="metric-card__icon"><span aria-hidden="true">✓</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="roles" /></div>
             <div>
                 <span>Estado de cuenta</span>
                 <strong>Activa</strong>
@@ -32,7 +32,7 @@
         </article>
 
         <article class="metric-card metric-card--teal">
-            <div class="metric-card__icon"><span aria-hidden="true">{{ $sessions->count() }}</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="sessions" /></div>
             <div>
                 <span>Sesiones abiertas</span>
                 <strong>{{ $sessions->count() }}</strong>
@@ -41,7 +41,7 @@
         </article>
 
         <article class="metric-card metric-card--yellow">
-            <div class="metric-card__icon"><span aria-hidden="true">!</span></div>
+            <div class="metric-card__icon"><x-icons.metric name="alerts" /></div>
             <div>
                 <span>Alertas últimos 7 días</span>
                 <strong>{{ $incidents }}</strong>
@@ -50,7 +50,7 @@
         </article>
 
         <article class="metric-card metric-card--orange">
-            <div class="metric-card__icon"><span aria-hidden="true">{{ auth()->user()->is_super_admin ? $activeUsers : '30' }}</span></div>
+            <div class="metric-card__icon"><x-icons.metric :name="auth()->user()->is_super_admin ? 'active-users' : 'clock'" /></div>
             <div>
                 <span>{{ auth()->user()->is_super_admin ? 'Usuarios activos' : 'Tiempo de sesión' }}</span>
                 <strong>{{ auth()->user()->is_super_admin ? $activeUsers : config('security.session_timeout_minutes').' min' }}</strong>

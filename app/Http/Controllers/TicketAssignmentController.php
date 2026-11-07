@@ -92,7 +92,7 @@ class TicketAssignmentController extends Controller
         $validated = $request->validate([
             'area_id' => ['nullable', 'integer', Rule::exists('areas', 'id')->where(fn ($query) => $query->where('type', 'it')->where('is_active', true))],
             'group_id' => ['nullable', 'integer', Rule::exists('it_groups', 'id')->where('is_active', true)],
-            'assignee_id' => ['nullable', 'integer', Rule::exists('users', 'id')->where('status', 'active')],
+            'assignee_id' => ['required', 'integer', Rule::exists('users', 'id')->where('status', 'active')],
             'reason' => ['required', 'string', 'min:5', 'max:1500'],
         ]);
 
@@ -115,6 +115,10 @@ class TicketAssignmentController extends Controller
             if (! $technical) {
                 throw ValidationException::withMessages(['assignee_id' => 'El responsable debe tener un perfil técnico activo.']);
             }
+            if (! empty($validated['area_id']) && $assignee->area_id !== (int) $validated['area_id']) {
+                throw ValidationException::withMessages(['assignee_id' => 'El técnico no pertenece al área seleccionada.']);
+            }
+            $validated['area_id'] = $validated['area_id'] ?? $assignee->area_id;
             if ($group && ! $group->members()->whereKey($assignee->id)->exists()) {
                 throw ValidationException::withMessages(['assignee_id' => 'El responsable seleccionado no pertenece al grupo técnico.']);
             }

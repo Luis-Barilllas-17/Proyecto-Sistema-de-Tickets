@@ -1,0 +1,199 @@
+{
+  "date": "2026-11-06T05:20:39.630Z",
+  "checks": [
+    {
+      "page": "inventario",
+      "width": 1600,
+      "overflow": true,
+      "controlsVisible": true,
+      "filterFits": true,
+      "allColumnsVisible": true,
+      "twoWayScroll": true
+    },
+    {
+      "page": "inventario",
+      "width": 1440,
+      "overflow": false,
+      "controlsVisible": false,
+      "filterFits": true,
+      "allColumnsVisible": true
+    },
+    {
+      "page": "inventario",
+      "width": 1280,
+      "overflow": true,
+      "controlsVisible": true,
+      "filterFits": true,
+      "allColumnsVisible": true,
+      "twoWayScroll": true
+    },
+    {
+      "page": "inventario",
+      "width": 1024,
+      "overflow": true,
+      "controlsVisible": true,
+      "filterFits": true,
+      "allColumnsVisible": true,
+      "twoWayScroll": true
+    },
+    {
+      "page": "inventario",
+      "width": 768,
+      "overflow": true,
+      "controlsVisible": true,
+      "filterFits": true,
+      "allColumnsVisible": true,
+      "twoWayScroll": true
+    },
+    {
+      "page": "inventario",
+      "width": 390,
+      "overflow": true,
+      "controlsVisible": true,
+      "filterFits": true,
+      "allColumnsVisible": true,
+      "twoWayScroll": true
+    },
+    {
+      "page": "inventario",
+      "width": 320,
+      "overflow": true,
+      "controlsVisible": true,
+      "filterFits": true,
+      "allColumnsVisible": true,
+      "twoWayScroll": true
+    },
+    {
+      "page": "accesos",
+      "width": 1600,
+      "actionsAligned": true
+    },
+    {
+      "page": "accesos",
+      "width": 1440,
+      "actionsAligned": true
+    },
+    {
+      "page": "accesos",
+      "width": 1280,
+      "actionsAligned": true
+    },
+    {
+      "page": "accesos",
+      "width": 1024,
+      "actionsAligned": true
+    },
+    {
+      "page": "accesos",
+      "width": 768,
+      "actionsAligned": true
+    },
+    {
+      "page": "accesos",
+      "width": 390,
+      "actionsAligned": true
+    },
+    {
+      "page": "accesos",
+      "width": 320,
+      "actionsAligned": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 1600,
+      "fieldsFit": true,
+      "labelsAligned": true,
+      "activeBelow": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 1440,
+      "fieldsFit": true,
+      "labelsAligned": true,
+      "activeBelow": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 1280,
+      "fieldsFit": true,
+      "labelsAligned": true,
+      "activeBelow": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 1024,
+      "fieldsFit": true,
+      "labelsAligned": true,
+      "activeBelow": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 768,
+      "fieldsFit": true,
+      "labelsAligned": true,
+      "activeBelow": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 390,
+      "fieldsFit": true,
+      "labelsAligned": false,
+      "activeBelow": true
+    },
+    {
+      "page": "crear-rol",
+      "width": 320,
+      "fieldsFit": true,
+      "labelsAligned": false,
+      "activeBelow": true
+    },
+    {
+      "page": "estados",
+      "width": 1600,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "estados",
+      "width": 1440,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "estados",
+      "width": 1280,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "estados",
+      "width": 1024,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "estados",
+      "width": 768,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "estados",
+      "width": 390,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "estados",
+      "width": 320,
+      "buttonFitsPanel": true
+    },
+    {
+      "page": "menu-y-campana",
+      "profile": "tecnico",
+      "passed": true
+    },
+    {
+      "page": "menu-y-campana",
+      "profile": "usuario",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "httpErrors": [],
+  "passed": true
+}

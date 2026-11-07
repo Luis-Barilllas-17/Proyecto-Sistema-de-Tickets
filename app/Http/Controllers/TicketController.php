@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ApprovalDelegation;
 use App\Models\Area;
+use App\Models\Equipment;
 use App\Models\ImpactLevel;
 use App\Models\Supply;
 use App\Models\TechnicalGroup;
@@ -18,11 +19,14 @@ use App\Services\InventoryService;
 use App\Services\TicketAttachmentService;
 use App\Services\TicketHistoryService;
 use App\Services\TicketInputService;
+use App\Services\TicketLookupService;
 use App\Services\TicketWorkflowService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -35,6 +39,7 @@ class TicketController extends Controller
         private TicketAttachmentService $attachments,
         private TicketHistoryService $history,
         private InventoryService $inventory,
+        private TicketLookupService $lookups,
     ) {}
 
     public function index(Request $request): View
@@ -94,15 +99,16 @@ class TicketController extends Controller
         $this->authorize('create', Ticket::class);
         $action = $request->validate(['action' => ['required', Rule::in(['draft', 'submit'])]])['action'];
         $submitting = $action === 'submit';
-        $validated = $this->input->validate($request, $submitting);
+        $staffForm = $this->usesStaffForm();
         $internal = $request->boolean('is_internal');
         if ($internal) {
             $this->authorize('createInternal', Ticket::class);
         }
-        $requester = $internal && ! empty($validated['requester_id'])
+        $validated = $this->input->validate($request, $submitting, staffForm: $staffForm);
+        $requester = $staffForm && ! empty($validated['requester_id'])
             ? User::where('status', 'active')->findOrFail($validated['requester_id']) : $request->user();
 
-        $ticket = DB::transaction(function () use ($request, $validated, $requester, $internal): Ticket {
+        $ticket = DB::transaction(function () use ($request, $validated, $requester, $internal, $submitting, $staffForm): Ticket {
             $ticket = Ticket::create(array_merge($this->input->ticketPayload($validated, $requester, $request->user(), $internal), [
                 'number' => $this->workflow->nextNumber(), 'is_draft' => true,
                 'ticket_status_id' => $this->workflow->initialStatus()->id,
@@ -110,19 +116,19 @@ class TicketController extends Controller
             ]));
             $this->input->syncValues($ticket, $validated['dynamic_values']);
             $this->input->syncEquipment($ticket, $validated['equipment'], $request->user());
+            $this->history->record($ticket, $request->user(), 'ticket_created', 'Ticket creado como borrador.', [], [
+                'number' => $ticket->number, 'source' => $ticket->source, 'capture_mode' => $staffForm ? 'staff' : 'requester',
+            ], $request);
+
+            if ($submitting) {
+                $this->workflow->submit($ticket, $request->user(), $request);
+            }
             if ($request->hasFile('attachments')) {
                 $this->attachments->storeMany($ticket, $request->user(), $request->file('attachments'), 'initial');
             }
-            $this->history->record($ticket, $request->user(), 'ticket_created', 'Ticket creado como borrador.', [], [
-                'number' => $ticket->number, 'source' => $ticket->source,
-            ], $request);
 
             return $ticket;
         });
-
-        if ($submitting) {
-            $this->workflow->submit($ticket, $request->user(), $request);
-        }
 
         return redirect()->route('tickets.show', $ticket)->with('success', $submitting
             ? 'Ticket '.$ticket->number.' enviado correctamente.' : 'Borrador '.$ticket->number.' guardado.');
@@ -161,13 +167,16 @@ class TicketController extends Controller
                 ->whereNotIn('slug', ['registrado', 'pendiente-aprobacion', 'solucionado'])->orderBy('sort_order')->get(),
             'itAreas' => Area::where('type', 'it')->where('is_active', true)->orderBy('name')->get(),
             'groups' => TechnicalGroup::with('area')->where('is_active', true)->orderBy('name')->get(),
-            'technicians' => User::with('roles')->where('status', 'active')->whereHas('roles', fn ($query) => $query
-                ->whereIn('slug', ['jefatura-it', 'encargado-area-it', 'tecnico-it', 'programador-it']))->orderBy('name')->get(),
-            'relatedCandidates' => $this->visibleQuery($request->user())->whereKeyNot($ticket->id)
-                ->where('is_draft', false)->orderByDesc('created_at')->limit(50)->get(['id', 'number', 'title']),
-            'availableSupplies' => $request->user()->hasPermission('inventory.consume')
-                ? Supply::where('is_active', true)->where('stock_quantity', '>', 0)->orderBy('name')->get()
-                : collect(),
+            'technicians' => User::with(['roles', 'technicalGroups'])->where('status', 'active')->whereHas('roles', fn ($query) => $query
+                ->where('is_active', true)->whereIn('slug', ['jefatura-it', 'encargado-area-it', 'tecnico-it', 'programador-it']))->orderBy('name')->get(),
+            'selectedRelatedTickets' => ctype_digit((string) old('related_ticket_id', ''))
+                ? $this->visibleQuery($request->user())->whereKey(old('related_ticket_id'))->whereKeyNot($ticket->id)
+                    ->where('is_draft', false)->get(['id', 'number', 'title'])
+                    ->map(fn ($candidate) => $this->relatedOption($candidate))->all() : [],
+            'selectedSupplies' => $request->user()->can('reserveSupply', $ticket) && ctype_digit((string) old('supply_id', ''))
+                ? Supply::where('is_active', true)->whereKey(old('supply_id'))->get()
+                    ->map(fn ($supply) => app(TicketLookupService::class)->supplyOption($supply, $ticket))->all()
+                : [],
         ]);
     }
 
@@ -183,28 +192,29 @@ class TicketController extends Controller
     {
         $this->authorize('update', $ticket);
         $action = $request->validate(['action' => ['required', Rule::in(['draft', 'submit'])]])['action'];
-        $validated = $this->input->validate($request, $action === 'submit', $ticket);
+        $validated = $this->input->validate($request, $action === 'submit', $ticket, $this->usesStaffForm($ticket));
         if ((int) ($validated['lock_version'] ?? 0) !== $ticket->lock_version) {
             throw ValidationException::withMessages(['lock_version' => 'El ticket fue actualizado en otra sesión. Recarga la página antes de guardar.']);
         }
 
-        DB::transaction(function () use ($request, $ticket, $validated): void {
+        DB::transaction(function () use ($request, $ticket, $validated, $action): void {
             $from = $ticket->only(['title', 'ticket_category_id', 'ticket_subcategory_id', 'impact_level_id', 'urgency_level_id']);
-            $ticket->update(array_merge($this->input->ticketPayload($validated, $ticket->requester, $request->user(), $ticket->source === 'it_internal'), [
+            $payload = $this->input->ticketPayload($validated, $ticket->requester, $ticket->creator, $ticket->source === 'it_internal');
+            $ticket->update(array_merge($payload, [
                 'lock_version' => $ticket->lock_version + 1, 'last_activity_at' => now(),
             ]));
             $this->input->syncValues($ticket, $validated['dynamic_values']);
             $this->input->syncEquipment($ticket, $validated['equipment'], $request->user());
+            $this->history->record($ticket, $request->user(), 'ticket_updated', 'Información del ticket actualizada.', $from,
+                $ticket->only(array_keys($from)), $request);
+
+            if ($action === 'submit') {
+                $this->workflow->submit($ticket, $request->user(), $request);
+            }
             if ($request->hasFile('attachments')) {
                 $this->attachments->storeMany($ticket, $request->user(), $request->file('attachments'), 'initial');
             }
-            $this->history->record($ticket, $request->user(), 'ticket_updated', 'Información del ticket actualizada.', $from,
-                $ticket->only(array_keys($from)), $request);
         });
-
-        if ($action === 'submit') {
-            $this->workflow->submit($ticket, $request->user(), $request);
-        }
 
         return redirect()->route('tickets.show', $ticket)->with('success', $action === 'submit'
             ? 'Ticket enviado nuevamente para atención.' : 'Borrador actualizado.');
@@ -244,18 +254,50 @@ class TicketController extends Controller
     public function reopen(Request $request, Ticket $ticket): RedirectResponse
     {
         $this->authorize('reopen', $ticket);
-        $validated = $request->validate(['reason' => ['required', 'string', 'min:10', 'max:1500']]);
-        $from = $ticket->status?->name;
-        $ticket->update([
-            'ticket_status_id' => $this->workflow->status('en-proceso')->id,
-            'closed_at' => null, 'closed_by_id' => null, 'reopened_at' => now(),
-            'reopen_count' => $ticket->reopen_count + 1, 'last_activity_at' => now(),
-            'lock_version' => $ticket->lock_version + 1,
-        ]);
-        $this->history->record($ticket, $request->user(), 'ticket_reopened', 'Ticket reabierto por el solicitante.',
-            ['status' => $from], ['status' => 'En proceso', 'reason' => $validated['reason']], $request);
+        $validated = $request->validate(['reason' => ['required', 'string', 'min:10', 'max:1500'],
+            'stock_action' => ['nullable', Rule::in(['keep', 'return'])]]);
+        $stockAction = $validated['stock_action'] ?? 'keep';
+        abort_if($stockAction === 'return' && ! $request->user()->hasPermission('inventory.consume'), 403);
+        DB::transaction(function () use ($request, $ticket, $validated, $stockAction): void {
+            $ticket = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('reopen', $ticket);
+            $previousSolution = ['solution' => $ticket->solution, 'solution_by_id' => $ticket->solution_by_id,
+                'solved_at' => $ticket->solved_at?->toIso8601String()];
+            $returned = $stockAction === 'return'
+                ? $this->inventory->returnConsumedForTicket($ticket, $request->user(), $validated['reason']) : 0;
+            $ticket->update([
+                'ticket_status_id' => $this->workflow->status('en-proceso')->id,
+                'closed_at' => null, 'closed_by_id' => null, 'reopened_at' => now(),
+                'solved_at' => null,
+                'reopen_count' => $ticket->reopen_count + 1, 'last_activity_at' => now(),
+                'lock_version' => $ticket->lock_version + 1,
+            ]);
+            $this->history->record($ticket, $request->user(), 'ticket_reopened', 'Ticket reabierto para continuar la atención.',
+                ['status' => 'Cerrado', ...$previousSolution], ['status' => 'En proceso', 'reason' => $validated['reason'],
+                    'stock_action' => $stockAction, 'returned_supplies' => $returned], $request);
+        });
 
-        return back()->with('success', 'Ticket reabierto para continuar la atención.');
+        return redirect()->to(route('tickets.show', $ticket).'#ticket-resolution')
+            ->with('edit_solution', true)->with('success', 'Ticket reabierto en atención. Actualiza la solución y revisa las reservas de insumos antes del nuevo cierre.');
+    }
+
+    public function relatedLookup(Request $request, Ticket $ticket): JsonResponse
+    {
+        $this->authorize('relate', $ticket);
+        $validated = $request->validate(['q' => ['nullable', 'string', 'max:100']]);
+        $term = trim($validated['q'] ?? '');
+        $matches = $this->visibleQuery($request->user())->whereKeyNot($ticket->id)->where('is_draft', false)
+            ->when($term !== '', fn ($query) => $query->where(fn ($match) => $match
+                ->where('number', 'like', '%'.$term.'%')->orWhere('title', 'like', '%'.$term.'%')))
+            ->orderByDesc('id')->limit(21)->get(['id', 'number', 'title']);
+
+        return response()->json(['results' => $matches->take(20)->map(fn ($candidate) => $this->relatedOption($candidate))->values(),
+            'has_more' => $matches->count() > 20]);
+    }
+
+    private function relatedOption(Ticket $ticket): array
+    {
+        return ['value' => (string) $ticket->id, 'label' => $ticket->number, 'description' => $ticket->title ?: 'Sin asunto'];
     }
 
     private function visibleQuery(User $user): Builder
@@ -297,20 +339,64 @@ class TicketController extends Controller
 
     private function formData(?Ticket $ticket, ?TicketCategory $category, ?TicketSubcategory $subcategory): array
     {
-        $form = $category ? $this->input->matchingForm($category->id, $subcategory?->id) : null;
+        // Los borradores existentes conservan su origen y sus respuestas.
+        $staffCapture = $this->usesStaffForm($ticket);
+        $staffForm = $staffCapture && Gate::allows('createInternal', Ticket::class);
+        $form = $category && ! $staffCapture ? $this->input->matchingForm($category->id, $subcategory?->id) : null;
+        $specificFields = $form?->fields->where('is_visible', true)
+            ->filter(fn ($field) => ! $this->input->baseFieldName($field) && $field->type !== 'file') ?? collect();
+        $requesterId = old('requester_id', auth()->id());
+        if (! is_scalar($requesterId) || ! ctype_digit((string) $requesterId)) {
+            $requesterId = auth()->id();
+        }
+        $formRequester = $ticket?->requester ?? ($staffForm
+            ? User::where('status', 'active')->find($requesterId) : auth()->user());
+        $formRequester ??= auth()->user();
+        $hasOldSelection = session()->hasOldInput('equipment_selection_present');
+        $cleanIds = fn ($values) => collect(is_array($values) ? $values : [])
+            ->filter(fn ($value) => is_scalar($value) && ctype_digit((string) $value))->map(fn ($value) => (int) $value)->unique()->take(10);
+        $equipmentIds = $cleanIds(old('equipment_ids', $hasOldSelection ? [] : ($ticket?->equipmentLinks->pluck('equipment_id')->filter()->all() ?? [])));
+        $legacyIds = $cleanIds(old('legacy_equipment_link_ids', $hasOldSelection ? [] : ($ticket?->equipmentLinks->whereNull('equipment_id')->pluck('id')->all() ?? [])));
+        $equipmentSelection = Equipment::whereIn('id', $equipmentIds)->orderBy('inventory_code')->get()
+            ->map(fn ($asset) => $this->lookups->equipmentOption($asset));
+        foreach ($ticket?->equipmentLinks->whereNull('equipment_id')->whereIn('id', $legacyIds) ?? [] as $link) {
+            $equipmentSelection->push([
+                'value' => 'legacy:'.$link->id, 'input_value' => (string) $link->id, 'input_name' => 'legacy_equipment_link_ids[]',
+                'label' => $link->inventory_code.' · '.($link->equipment_name ?: 'Referencia anterior'),
+                'description' => 'Referencia anterior conservada; sin equipo registrado asociado.',
+            ]);
+        }
 
         return [
             'ticket' => $ticket, 'selectedCategory' => $category, 'selectedSubcategory' => $subcategory, 'form' => $form,
+            'staffForm' => $staffForm, 'specificFields' => $specificFields,
+            'formRequester' => $formRequester,
+            'requesterSelection' => [$this->lookups->requesterOption($formRequester)],
+            'equipmentSelection' => $equipmentSelection->values()->all(),
+            'fileFields' => $form?->fields->where('is_visible', true)->where('type', 'file') ?? collect(),
             'categories' => TicketCategory::with(['subcategories' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')])
                 ->where('is_active', true)->orderBy('sort_order')->get(),
             'areas' => Area::with(['departments' => fn ($query) => $query->where('is_active', true)->orderBy('name')])
                 ->where('is_active', true)->orderBy('name')->get(),
             'impacts' => ImpactLevel::where('is_active', true)->orderBy('value')->get(),
             'urgencies' => UrgencyLevel::where('is_active', true)->orderBy('value')->get(),
-            'requesters' => User::where('status', 'active')->orderBy('name')->get(),
             'attentionTypes' => Ticket::ATTENTION_TYPES,
             'existingValues' => $ticket?->fieldValues?->keyBy('form_field_id') ?? collect(),
-            'equipmentText' => $ticket?->equipmentLinks?->map(fn ($item) => $item->inventory_code.($item->equipment_name ? ' | '.$item->equipment_name : ''))->implode("\n"),
         ];
+    }
+
+    private function usesStaffForm(?Ticket $ticket = null): bool
+    {
+        if (! $ticket) {
+            return Gate::allows('createInternal', Ticket::class);
+        }
+
+        $created = $ticket->histories()->where('event', 'ticket_created')->oldest('id')->first();
+        if (isset($created?->to_values['capture_mode'])) {
+            return $created->to_values['capture_mode'] === 'staff';
+        }
+
+        return $ticket->source === 'it_internal'
+            || ($ticket->ticket_form_id === null && $ticket->creator && Gate::forUser($ticket->creator)->allows('createInternal', Ticket::class));
     }
 }

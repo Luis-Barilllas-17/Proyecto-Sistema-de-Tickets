@@ -1,0 +1,5 @@
+EVIDENCIA FICTICIA PARA PRUEBAS DEL FORMULARIO
+
+Caso: la aplicación de operaciones no permite guardar un registro de prueba.
+Resultado observado: aparece un mensaje de error y el registro no se guarda.
+Impacto: una estación de trabajo. No contiene datos reales ni credenciales.

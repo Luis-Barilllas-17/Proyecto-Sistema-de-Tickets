@@ -1,0 +1,176 @@
+{
+  "date": "2026-11-07T00:43:48.858Z",
+  "base": "http://127.0.0.1:8017",
+  "profiles": [
+    {
+      "profile": "admin",
+      "checks": [
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        }
+      ],
+      "requesterProfileSynchronized": true,
+      "areaAndDepartmentEditable": true,
+      "multipleEquipmentSelected": true,
+      "invalidSubmissionPreservedData": true,
+      "ticketUrl": "http://127.0.0.1:8017/tickets/16",
+      "number": "ZT-2026-000016",
+      "draftEditedAndSubmitted": true
+    },
+    {
+      "profile": "tecnico",
+      "checks": [
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "staff",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 0,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        }
+      ],
+      "requesterProfileSynchronized": true,
+      "areaAndDepartmentEditable": true,
+      "multipleEquipmentSelected": true,
+      "invalidSubmissionPreservedData": true,
+      "ticketUrl": "http://127.0.0.1:8017/tickets/17",
+      "number": "ZT-2026-000017",
+      "draftEditedAndSubmitted": true
+    },
+    {
+      "profile": "usuario",
+      "checks": [
+        {
+          "mode": "requester",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 3,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "requester",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 3,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "requester",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 3,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        },
+        {
+          "mode": "requester",
+          "subjects": 1,
+          "descriptions": 1,
+          "files": 1,
+          "dynamicFields": 3,
+          "duplicateIds": [],
+          "brokenLabels": [],
+          "overflow": false,
+          "footerOverlapsFields": false
+        }
+      ],
+      "areaAndDepartmentEditable": true,
+      "multipleEquipmentSelected": true,
+      "invalidSubmissionPreservedData": true,
+      "ticketUrl": "http://127.0.0.1:8017/tickets/18",
+      "number": "ZT-2026-000018",
+      "draftEditedAndSubmitted": true
+    }
+  ],
+  "errors": [],
+  "failedRequests": [],
+  "passed": true
+}

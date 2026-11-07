@@ -17,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 
 class TicketInputService
 {
-    public function validate(Request $request, bool $submitting, ?Ticket $ticket = null): array
+    public function validate(Request $request, bool $submitting, ?Ticket $ticket = null, bool $staffForm = false): array
     {
         $required = $submitting ? 'required' : 'nullable';
         $validated = $request->validate([
@@ -34,12 +34,31 @@ class TicketInputService
             'urgency_level_id' => [$required, 'integer', Rule::exists('urgency_levels', 'id')->where('is_active', true)],
             'is_internal' => ['nullable', 'boolean'],
             'fields' => ['nullable', 'array', 'max:100'],
-            'equipment_codes' => ['nullable', 'string', 'max:1500'],
+            'equipment_codes' => ['prohibited'],
+            'equipment_ids' => ['nullable', 'array', 'max:10'],
+            'equipment_ids.*' => ['required', 'integer', 'distinct', 'exists:equipment,id'],
+            'legacy_equipment_link_ids' => ['nullable', 'array', 'max:10'],
+            'legacy_equipment_link_ids.*' => ['required', 'integer', 'distinct', Rule::exists('ticket_equipment_links', 'id')
+                ->where('ticket_id', $ticket?->id ?? 0)->whereNull('equipment_id')],
             'attachments' => ['nullable', 'array', 'max:'.UploadSecurityPolicy::MAX_FILES_PER_REQUEST],
             'attachments.*' => UploadSecurityPolicy::fileRules(TicketAttachmentService::ALLOWED_EXTENSIONS),
             'lock_version' => ['nullable', 'integer', 'min:1'],
         ], [
+            'ticket_category_id.required' => 'Selecciona una categoría.',
+            'ticket_subcategory_id.required' => 'Selecciona una subcategoría.',
+            'title.required' => 'Ingresa el asunto del ticket.',
+            'description.required' => 'Describe el problema o trabajo que requiere atención.',
+            'requester_area_id.required' => 'Selecciona el área solicitante.',
+            'location.required' => 'Indica la ubicación de la atención.',
+            'attention_type.required' => 'Selecciona el tipo de atención.',
+            'impact_level_id.required' => 'Selecciona el nivel de impacto.',
+            'urgency_level_id.required' => 'Selecciona el nivel de urgencia.',
             'attachments.*' => 'Uno de los archivos no es válido, supera 5 MB o tiene un tipo no permitido.',
+            'equipment_codes.prohibited' => 'Selecciona los equipos registrados en el inventario; no ingreses códigos manualmente.',
+            'equipment_ids.max' => 'Puedes vincular un máximo de 10 equipos.',
+            'equipment_ids.*.exists' => 'Uno de los equipos seleccionados no está registrado en el inventario.',
+            'equipment_ids.*.distinct' => 'No selecciones el mismo equipo más de una vez.',
+            'legacy_equipment_link_ids.*.exists' => 'La referencia anterior no pertenece a este ticket.',
         ]);
 
         if (! empty($validated['ticket_subcategory_id']) && ! TicketSubcategory::whereKey($validated['ticket_subcategory_id'])
@@ -51,19 +70,20 @@ class TicketInputService
             throw ValidationException::withMessages(['requester_department_id' => 'El departamento no pertenece al área solicitante.']);
         }
 
-        $form = $this->matchingForm($validated['ticket_category_id'], $validated['ticket_subcategory_id'] ?? null);
-        $validated['ticket_form_id'] = $form?->id;
-        $validated['dynamic_values'] = $this->validateDynamicFields($request, $form, $submitting, $ticket);
-        $validated['equipment'] = $this->parseEquipment($validated['equipment_codes'] ?? null);
+        $form = $staffForm ? null : $this->matchingForm($validated['ticket_category_id'], $validated['ticket_subcategory_id'] ?? null);
+        $validated['ticket_form_id'] = $staffForm ? $ticket?->ticket_form_id : $form?->id;
+        $validated['dynamic_values'] = $staffForm
+            ? ($ticket?->fieldValues->map(fn ($value) => [
+                'field_id' => $value->form_field_id, 'value' => $value->value, 'value_json' => $value->value_json,
+            ])->all() ?? [])
+            : $this->validateDynamicFields($request, $form, $submitting, $ticket);
+        $validated['equipment'] = $this->selectedEquipment($validated, $ticket);
 
         return $validated;
     }
 
     public function ticketPayload(array $validated, User $requester, User $creator, bool $internal): array
     {
-        $areaId = $requester->area_id ?: ($validated['requester_area_id'] ?? null);
-        $departmentId = $requester->department_id ?: ($validated['requester_department_id'] ?? null);
-
         return [
             'requester_id' => $requester->id, 'created_by_id' => $creator->id,
             'source' => $internal ? 'it_internal' : 'requester',
@@ -72,7 +92,8 @@ class TicketInputService
             'ticket_category_id' => $validated['ticket_category_id'],
             'ticket_subcategory_id' => $validated['ticket_subcategory_id'] ?? null,
             'ticket_form_id' => $validated['ticket_form_id'],
-            'requester_area_id' => $areaId, 'requester_department_id' => $departmentId,
+            'requester_area_id' => $validated['requester_area_id'] ?? null,
+            'requester_department_id' => $validated['requester_department_id'] ?? null,
             'location' => $this->cleanText($validated['location'] ?? null),
             'attention_type' => $validated['attention_type'] ?? null,
             'impact_level_id' => $validated['impact_level_id'] ?? null,
@@ -97,16 +118,22 @@ class TicketInputService
 
     public function syncEquipment(Ticket $ticket, array $equipment, User $actor): void
     {
-        $ticket->equipmentLinks()->delete();
+        $kept = [];
         foreach ($equipment as $item) {
-            $asset = Equipment::where('inventory_code', $item['code'])->first();
-            $ticket->equipmentLinks()->create([
-                'equipment_id' => $asset?->id,
-                'inventory_code' => $item['code'],
-                'equipment_name' => $asset?->name ?? $item['name'],
-                'linked_by_id' => $actor->id,
-            ]);
+            if (isset($item['legacy_link_id'])) {
+                $kept[] = $item['legacy_link_id'];
+
+                continue;
+            }
+            $link = $ticket->equipmentLinks()->firstOrNew(['equipment_id' => $item['id']]);
+            $link->fill(['inventory_code' => $item['code'], 'equipment_name' => $item['name']]);
+            if (! $link->exists) {
+                $link->linked_by_id = $actor->id;
+            }
+            $link->save();
+            $kept[] = $link->id;
         }
+        $ticket->equipmentLinks()->whereNotIn('id', $kept)->delete();
     }
 
     public function matchingForm(int $categoryId, ?int $subcategoryId): ?TicketForm
@@ -115,6 +142,19 @@ class TicketInputService
             ->where('is_active', true)->where('ticket_category_id', $categoryId)
             ->where(fn ($query) => $query->whereNull('ticket_subcategory_id')->when($subcategoryId, fn ($inner) => $inner->orWhere('ticket_subcategory_id', $subcategoryId)))
             ->get()->sortByDesc(fn ($form) => $form->ticket_subcategory_id ? 1 : 0)->first();
+    }
+
+    public function baseFieldName(FormField $field): ?string
+    {
+        if ($field->is_readonly) {
+            return null;
+        }
+
+        return match (Str::lower($field->name)) {
+            'asunto', 'title' => $field->type === 'text' ? 'title' : null,
+            'descripcion', 'description' => $field->type === 'textarea' ? 'description' : null,
+            default => null,
+        };
     }
 
     private function validateDynamicFields(Request $request, ?TicketForm $form, bool $submitting, ?Ticket $ticket): array
@@ -127,6 +167,15 @@ class TicketInputService
         $values = [];
         $errors = [];
         foreach ($form->fields as $field) {
+            if ($baseField = $this->baseFieldName($field)) {
+                $value = $this->cleanText($request->input($baseField));
+                if ($value !== null && $value !== '') {
+                    // Conserva compatibilidad con las respuestas de formularios ya configurados.
+                    $values[] = ['field_id' => $field->id, 'value' => $value, 'value_json' => null];
+                }
+
+                continue;
+            }
             $raw = $field->is_readonly ? $field->default_value : ($provided[$field->id] ?? null);
             if ($field->type === 'checkbox') {
                 $raw = filter_var($raw, FILTER_VALIDATE_BOOL) ? '1' : '0';
@@ -137,7 +186,7 @@ class TicketInputService
                 }
             }
             if ($field->type === 'file') {
-                if ($submitting && $field->is_required && ! $request->hasFile('attachments')
+                if ($submitting && $field->is_required && $field->is_visible && ! $request->hasFile('attachments')
                     && ! $ticket?->attachments()->where('is_internal', false)->exists()) {
                     $errors["fields.$field->id"] = 'Adjunta al menos un archivo para «'.$field->label.'».';
                 }
@@ -199,17 +248,25 @@ class TicketInputService
         return isset($errors[$key]) ? null : $value;
     }
 
-    private function parseEquipment(?string $input): array
+    private function selectedEquipment(array $validated, ?Ticket $ticket): array
     {
-        $items = collect(preg_split('/[\r\n,;]+/', (string) $input))->map(fn ($item) => trim($item))->filter()->unique()->take(10);
+        $ids = $validated['equipment_ids'] ?? [];
+        $legacyIds = $validated['legacy_equipment_link_ids'] ?? [];
+        if (count($ids) + count($legacyIds) > 10) {
+            throw ValidationException::withMessages(['equipment_ids' => 'Puedes vincular un máximo de 10 equipos, incluidas las referencias anteriores.']);
+        }
+        $existing = $ticket?->equipmentLinks()->whereNotNull('equipment_id')->pluck('equipment_id')->map(fn ($id) => (int) $id)->all() ?? [];
+        $assets = Equipment::whereIn('id', $ids)->get()->keyBy('id');
         $result = [];
-        foreach ($items as $item) {
-            [$code, $name] = array_pad(array_map('trim', explode('|', $item, 2)), 2, null);
-            $code = Str::upper($code);
-            if (! preg_match('/^[A-Z0-9._\/-]{1,50}$/', $code)) {
-                throw ValidationException::withMessages(['equipment_codes' => 'Usa códigos de inventario válidos, uno por línea.']);
+        foreach ($ids as $id) {
+            $asset = $assets->get($id);
+            if ((! $asset->is_active || $asset->status === 'retired') && ! in_array((int) $id, $existing, true)) {
+                throw ValidationException::withMessages(['equipment_ids' => 'Solo puedes agregar equipos activos que no estén dados de baja.']);
             }
-            $result[] = ['code' => $code, 'name' => $name ? mb_substr($this->cleanText($name), 0, 180) : null];
+            $result[] = ['id' => $asset->id, 'code' => $asset->inventory_code, 'name' => $asset->name];
+        }
+        foreach ($legacyIds as $id) {
+            $result[] = ['legacy_link_id' => (int) $id];
         }
 
         return $result;

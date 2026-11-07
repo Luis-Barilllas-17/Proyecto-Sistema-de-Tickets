@@ -104,7 +104,7 @@ class TicketWorkflowService
                 ], $request);
             } else {
                 $ticket->update(['approval_status' => 'not_required']);
-                $this->assignAutomatically($ticket, $actor, $request);
+                $this->awaitManualAssignment($ticket, $actor, $request);
                 $this->history->record($ticket, $actor, 'ticket_submitted', 'Ticket enviado para atención.', [], [
                     'priority' => $priority->name,
                 ], $request);
@@ -140,7 +140,7 @@ class TicketWorkflowService
                 } else {
                     $ticket->update(['approval_status' => 'approved']);
                     $this->history->record($ticket, $actor, 'approval_completed', 'Flujo de aprobación completado.', [], ['comment' => $comment], $request);
-                    $this->assignAutomatically($ticket, $actor, $request);
+                    $this->awaitManualAssignment($ticket, $actor, $request);
                 }
             } elseif ($decision === 'rejected') {
                 $ticket->approvals()->where('status', 'waiting')->update(['status' => 'skipped']);
@@ -162,6 +162,9 @@ class TicketWorkflowService
         return DB::transaction(function () use ($ticket, $actor, $areaId, $groupId, $assigneeId, $reason, $action, $request): TicketAssignment {
             $ticket = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
             $from = ['area_id' => $ticket->current_it_area_id, 'group_id' => $ticket->current_it_group_id, 'user_id' => $ticket->current_assignee_id];
+            if ($ticket->isTerminal() || $ticket->is_draft || in_array($ticket->approval_status, ['pending', 'rejected', 'changes_requested'], true)) {
+                throw ValidationException::withMessages(['assignee_id' => 'Este ticket no está disponible para asignación.']);
+            }
             $ticket->assignments()->where('status', 'pending')->update(['status' => 'superseded', 'responded_at' => now()]);
             $assignment = $ticket->assignments()->create([
                 'from_area_id' => $from['area_id'], 'from_group_id' => $from['group_id'], 'from_user_id' => $from['user_id'],
@@ -183,18 +186,11 @@ class TicketWorkflowService
         });
     }
 
-    public function assignAutomatically(Ticket $ticket, User $actor, ?Request $request = null): ?TicketAssignment
+    public function awaitManualAssignment(Ticket $ticket, User $actor, ?Request $request = null): void
     {
-        $route = $this->matchingRoutingRule($ticket);
-        if (! $route) {
-            $ticket->update(['ticket_status_id' => $this->initialStatus()->id, 'assignment_status' => 'unassigned', 'last_activity_at' => now()]);
-            $this->history->record($ticket, $actor, 'routing_pending', 'No se encontró una regla automática; el ticket queda pendiente de asignación manual.', [], [], $request);
-
-            return null;
-        }
-
-        return $this->assign($ticket, $actor, $route->it_area_id, $route->it_group_id, $route->assignee_user_id,
-            'Asignación automática mediante la regla «'.$route->name.'».', 'automatic', $request);
+        $ticket->update(['ticket_status_id' => $this->initialStatus()->id, 'assignment_status' => 'unassigned',
+            'current_assignee_id' => null, 'current_it_area_id' => null, 'current_it_group_id' => null, 'last_activity_at' => now()]);
+        $this->history->record($ticket, $actor, 'routing_pending', 'Ticket registrado; un responsable autorizado debe seleccionar manualmente al técnico.', [], [], $request);
     }
 
     public function changeStatus(Ticket $ticket, TicketStatus $status, User $actor, string $reason, ?Request $request = null): void

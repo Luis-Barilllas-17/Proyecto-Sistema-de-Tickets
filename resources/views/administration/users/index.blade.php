@@ -17,19 +17,19 @@
 
     <section class="people-metrics" aria-label="Resumen del directorio institucional">
         <article class="people-metric people-metric--navy">
-            <span class="people-metric__mark" aria-hidden="true">01</span>
+            <span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="users" /></span>
             <div><small>Directorio total</small><strong>{{ $metrics['total'] }}</strong><span>Cuentas registradas</span></div>
         </article>
         <article class="people-metric people-metric--teal">
-            <span class="people-metric__mark" aria-hidden="true">02</span>
+            <span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="active-users" /></span>
             <div><small>Usuarios activos</small><strong>{{ $metrics['active'] }}</strong><span>Con acceso habilitado</span></div>
         </article>
         <article class="people-metric people-metric--blue">
-            <span class="people-metric__mark" aria-hidden="true">03</span>
+            <span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="technicians" /></span>
             <div><small>Personal de IT</small><strong>{{ $metrics['technical'] }}</strong><span>Jefaturas y equipo técnico</span></div>
         </article>
         <article class="people-metric people-metric--orange">
-            <span class="people-metric__mark" aria-hidden="true">04</span>
+            <span class="people-metric__mark" aria-hidden="true"><x-icons.metric name="restricted" /></span>
             <div><small>Acceso restringido</small><strong>{{ $metrics['restricted'] }}</strong><span>Suspendidos o inactivos</span></div>
         </article>
     </section>

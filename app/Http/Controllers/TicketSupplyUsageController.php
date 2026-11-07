@@ -21,12 +21,14 @@ class TicketSupplyUsageController extends Controller
         $this->authorize('reserveSupply', $ticket);
         $validated = $request->validate([
             'supply_id' => ['required', 'integer', Rule::exists('supplies', 'id')->where('is_active', true)],
-            'quantity' => ['required', 'numeric', 'between:0.01,9999999999.99'],
+            'quantity' => ['required', 'integer', 'between:1,9999999999'],
             'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
+        ], ['quantity.integer' => 'La cantidad debe ser un número entero, sin decimales.']);
         $supply = Supply::findOrFail($validated['supply_id']);
 
         DB::transaction(function () use ($request, $ticket, $supply, $validated): void {
+            $ticket = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('reserveSupply', $ticket);
             $usage = $this->inventory->reserveSupply($ticket, $supply, (float) $validated['quantity'], $validated['notes'] ?? null, $request->user());
             $this->history->record($ticket, $request->user(), 'ticket_supply_reserved',
                 'Insumo '.$supply->code.' reservado para la atención.', [], [
